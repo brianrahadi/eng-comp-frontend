@@ -19,7 +19,19 @@ function getNodeColor(status: Camera["Status"]): string {
   return "#86efac";
 }
 
-export default function MapView({ cameras }: { cameras: Camera[] }) {
+interface MapViewProps {
+  cameras: Camera[];
+  selectedSegmentId?: number | null;
+  onSegmentSelect?: (segmentId: number | null) => void;
+  isPlaybackMode?: boolean;
+}
+
+export default function MapView({
+  cameras,
+  selectedSegmentId = null,
+  onSegmentSelect,
+  isPlaybackMode = false,
+}: MapViewProps) {
   const [hoverId, setHoverId] = useState<number | null>(null);
 
   const bounds = useMemo(() => {
@@ -191,13 +203,14 @@ export default function MapView({ cameras }: { cameras: Camera[] }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          border: "2px solid #333",
+          border: selectedSegmentId === c.SegmentID ? "3px solid #3b82f6" : "2px solid #333",
           color: "#000",
           fontWeight: "500",
           fontSize: "12px",
+          transition: isPlaybackMode ? "background 0.3s ease, border 0.3s ease" : "none",
         },
       })),
-    [cameras]
+    [cameras, selectedSegmentId, isPlaybackMode]
   );
 
   const allNodes = useMemo(() => [...axisNodes, ...gridNodes, ...nodes], [axisNodes, gridNodes, nodes]);
@@ -231,6 +244,12 @@ export default function MapView({ cameras }: { cameras: Camera[] }) {
           }
         }}
         onNodeMouseLeave={() => setHoverId(null)}
+        onNodeClick={(_, node) => {
+          const id = Number(node.id);
+          if (!isNaN(id) && onSegmentSelect) {
+            onSegmentSelect(id === selectedSegmentId ? null : id);
+          }
+        }}
         fitView
         fitViewOptions={{ padding: 0.2 }}
         nodesDraggable={false}

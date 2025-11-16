@@ -1,5 +1,5 @@
 import { useCameraData } from "../hooks/useCameraData";
-import MapView from "../components/MapView";
+import MapAndChartsLayout from "../components/MapAndChartsLayout";
 import Dashboard from "../components/Dashboard";
 import CameraTable from "../components/CameraTable";
 
@@ -35,10 +35,7 @@ export default function DashboardPage() {
 
       <Dashboard cameras={data} />
 
-      <div>
-        <h2 className="text-xl font-semibold mb-3 text-gray-700">Camera Map</h2>
-        <MapView cameras={data} />
-      </div>
+      <MapAndChartsLayout cameras={data} />
 
       <div>
         <h2 className="text-xl font-semibold mb-3 text-gray-700">Camera Details</h2>
