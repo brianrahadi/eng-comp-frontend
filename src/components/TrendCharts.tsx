@@ -31,8 +31,8 @@ export default function TrendCharts({
   isPlaying,
   onPlayPause,
 }: TrendChartsProps) {
-  const chartData = useMemo(() => {
-    if (history.length === 0) return [];
+  const { chartData, segmentIds } = useMemo(() => {
+    if (history.length === 0) return { chartData: [], segmentIds: [] };
 
     const last30Seconds = history.filter(
       (point) => !currentTime || point.timestamp >= currentTime - 30000
@@ -40,8 +40,8 @@ export default function TrendCharts({
 
     const statuses = ["OK", "LOWLIGHT", "WARNING"];
     
-    return last30Seconds.map((point) => {
-      if (selectedSegmentId !== null) {
+    if (selectedSegmentId !== null) {
+      const data = last30Seconds.map((point) => {
         const camera = point.cameras.find((c) => c.SegmentID === selectedSegmentId);
         if (!camera) return null;
 
@@ -53,31 +53,44 @@ export default function TrendCharts({
           status: camera.Status,
           statusValue: statuses.indexOf(camera.Status),
         };
-      } else {
+      }).filter(Boolean);
+      
+      return { chartData: data, segmentIds: [selectedSegmentId] };
+    } else {
+      const allSegmentIds = new Set<number>();
+      last30Seconds.forEach((point) => {
+        point.cameras.forEach((c) => allSegmentIds.add(c.SegmentID));
+      });
+      const segmentIdsArray = Array.from(allSegmentIds).sort((a, b) => a - b);
+
+      const data = last30Seconds.map((point) => {
         if (point.cameras.length === 0) return null;
+
+        const result: any = {
+          time: new Date(point.timestamp).toLocaleTimeString(),
+          timestamp: point.timestamp,
+        };
 
         const avgWater = point.cameras.reduce((sum, c) => sum + c.Water, 0) / point.cameras.length;
         const avgLight = point.cameras.reduce((sum, c) => sum + c.Light, 0) / point.cameras.length;
         
-        const warningCount = point.cameras.filter((c) => c.Status === "WARNING").length;
-        const lowlightCount = point.cameras.filter((c) => c.Status === "LOWLIGHT").length;
-        const okCount = point.cameras.filter((c) => c.Status === "OK").length;
-        
-        const dominantStatus = warningCount > 0 ? "WARNING" : lowlightCount > 0 ? "LOWLIGHT" : "OK";
-        
-        return {
-          time: new Date(point.timestamp).toLocaleTimeString(),
-          timestamp: point.timestamp,
-          water: avgWater * 100,
-          light: avgLight,
-          status: dominantStatus,
-          statusValue: statuses.indexOf(dominantStatus),
-          warningCount,
-          lowlightCount,
-          okCount,
-        };
-      }
-    }).filter(Boolean);
+        result.avgWater = avgWater * 100;
+        result.avgLight = avgLight;
+
+        segmentIdsArray.forEach((segmentId) => {
+          const camera = point.cameras.find((c) => c.SegmentID === segmentId);
+          if (camera) {
+            result[`water_${segmentId}`] = camera.Water * 100;
+            result[`light_${segmentId}`] = camera.Light;
+            result[`status_${segmentId}`] = statuses.indexOf(camera.Status);
+          }
+        });
+
+        return result;
+      }).filter(Boolean);
+
+      return { chartData: data, segmentIds: segmentIdsArray };
+    }
   }, [selectedSegmentId, history, currentTime]);
 
   if (chartData.length === 0) {
@@ -113,7 +126,7 @@ export default function TrendCharts({
 
       <div className="bg-white rounded-lg p-2 shadow-sm">
         <h4 className="text-xs font-medium mb-1 text-gray-700">
-          {selectedSegmentId !== null ? "Water Level (%)" : "Average Water Level (%)"}
+          {selectedSegmentId !== null ? "Water Level (%)" : "Water Level (%) - All Segments"}
         </h4>
         <ResponsiveContainer width="100%" height={120}>
           <LineChart data={chartData}>
@@ -122,21 +135,45 @@ export default function TrendCharts({
             <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} width={40} />
             <Tooltip />
             <Legend wrapperStyle={{ fontSize: "10px" }} />
-            <Line
-              type="monotone"
-              dataKey="water"
-              stroke="#3b82f6"
-              strokeWidth={1.5}
-              dot={false}
-              name={selectedSegmentId !== null ? "Water %" : "Avg Water %"}
-            />
+            {selectedSegmentId !== null ? (
+              <Line
+                type="monotone"
+                dataKey="water"
+                stroke="#3b82f6"
+                strokeWidth={1.5}
+                dot={false}
+                name="Water %"
+              />
+            ) : (
+              <>
+                {segmentIds.map((segmentId) => (
+                  <Line
+                    key={segmentId}
+                    type="monotone"
+                    dataKey={`water_${segmentId}`}
+                    stroke="#94a3b8"
+                    strokeWidth={1}
+                    dot={false}
+                    name={`Seg ${segmentId}`}
+                  />
+                ))}
+                <Line
+                  type="monotone"
+                  dataKey="avgWater"
+                  stroke="#ef4444"
+                  strokeWidth={2}
+                  dot={false}
+                  name="Average"
+                />
+              </>
+            )}
           </LineChart>
         </ResponsiveContainer>
       </div>
 
       <div className="bg-white rounded-lg p-2 shadow-sm">
         <h4 className="text-xs font-medium mb-1 text-gray-700">
-          {selectedSegmentId !== null ? "Light Level" : "Average Light Level"}
+          {selectedSegmentId !== null ? "Light Level" : "Light Level - All Segments"}
         </h4>
         <ResponsiveContainer width="100%" height={120}>
           <LineChart data={chartData}>
@@ -145,20 +182,46 @@ export default function TrendCharts({
             <YAxis tick={{ fontSize: 10 }} width={40} />
             <Tooltip />
             <Legend wrapperStyle={{ fontSize: "10px" }} />
-            <Line
-              type="monotone"
-              dataKey="light"
-              stroke="#f59e0b"
-              strokeWidth={1.5}
-              dot={false}
-              name={selectedSegmentId !== null ? "Light" : "Avg Light"}
-            />
+            {selectedSegmentId !== null ? (
+              <Line
+                type="monotone"
+                dataKey="light"
+                stroke="#f59e0b"
+                strokeWidth={1.5}
+                dot={false}
+                name="Light"
+              />
+            ) : (
+              <>
+                {segmentIds.map((segmentId) => (
+                  <Line
+                    key={segmentId}
+                    type="monotone"
+                    dataKey={`light_${segmentId}`}
+                    stroke="#94a3b8"
+                    strokeWidth={1}
+                    dot={false}
+                    name={`Seg ${segmentId}`}
+                  />
+                ))}
+                <Line
+                  type="monotone"
+                  dataKey="avgLight"
+                  stroke="#ef4444"
+                  strokeWidth={2}
+                  dot={false}
+                  name="Average"
+                />
+              </>
+            )}
           </LineChart>
         </ResponsiveContainer>
       </div>
 
       <div className="bg-white rounded-lg p-2 shadow-sm">
-        <h4 className="text-xs font-medium mb-1 text-gray-700">Status Changes</h4>
+        <h4 className="text-xs font-medium mb-1 text-gray-700">
+          {selectedSegmentId !== null ? "Status Changes" : "Status Changes - All Segments"}
+        </h4>
         <ResponsiveContainer width="100%" height={120}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -179,14 +242,28 @@ export default function TrendCharts({
               }}
             />
             <Legend wrapperStyle={{ fontSize: "10px" }} />
-            <Line
-              type="stepAfter"
-              dataKey="statusValue"
-              stroke="#ef4444"
-              strokeWidth={1.5}
-              dot={false}
-              name="Status"
-            />
+            {selectedSegmentId !== null ? (
+              <Line
+                type="stepAfter"
+                dataKey="statusValue"
+                stroke="#ef4444"
+                strokeWidth={1.5}
+                dot={false}
+                name="Status"
+              />
+            ) : (
+              segmentIds.map((segmentId) => (
+                <Line
+                  key={segmentId}
+                  type="stepAfter"
+                  dataKey={`status_${segmentId}`}
+                  stroke="#94a3b8"
+                  strokeWidth={1}
+                  dot={false}
+                  name={`Seg ${segmentId}`}
+                />
+              ))
+            )}
           </LineChart>
         </ResponsiveContainer>
       </div>
