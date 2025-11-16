@@ -1,13 +1,15 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useCameraData } from "../hooks/useCameraData";
 import MapAndChartsLayout from "../components/MapAndChartsLayout";
 import Dashboard from "../components/Dashboard";
 import CameraTable from "../components/CameraTable";
 import Header from "../components/Header";
+import InsightsCard from "../components/InsightsCard";
 
 export default function DashboardPage() {
   const { data, isLoading, error } = useCameraData();
   const pageRef = useRef<HTMLDivElement>(null);
+  const [selectedSegmentId, setSelectedSegmentId] = useState<number | null>(null);
 
   if (isLoading) {
     return (
@@ -33,12 +35,19 @@ export default function DashboardPage() {
       <div ref={pageRef} className="py-1 px-6 space-y-6">
         <Dashboard cameras={data} />
 
-        <MapAndChartsLayout cameras={data} />
+        <MapAndChartsLayout 
+          cameras={data} 
+          selectedSegmentId={selectedSegmentId}
+          onSegmentSelect={setSelectedSegmentId}
+        />
 
         <div>
           <h2 className="text-xl font-semibold mb-3 text-[#F8FAFC]">Camera Details</h2>
-          <div className="bg-[#1E293B] rounded-lg border border-[#334155] p-4">
-            <CameraTable cameras={data} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-[#1E293B] rounded-lg border border-[#334155] p-4">
+              <CameraTable cameras={data} />
+            </div>
+            <InsightsCard cameras={data} selectedSegmentId={selectedSegmentId} />
           </div>
         </div>
       </div>

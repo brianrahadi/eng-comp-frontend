@@ -6,13 +6,18 @@ import { useHistoricalData } from "../hooks/useHistoricalData";
 
 interface MapAndChartsLayoutProps {
   cameras: Camera[];
+  selectedSegmentId: number | null;
+  onSegmentSelect: (segmentId: number | null) => void;
 }
 
 type Tab = "map" | "charts" | "both";
 
-export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps) {
+export default function MapAndChartsLayout({ 
+  cameras, 
+  selectedSegmentId, 
+  onSegmentSelect 
+}: MapAndChartsLayoutProps) {
   const [activeTab, setActiveTab] = useState<Tab>("both");
-  const [selectedSegmentId, setSelectedSegmentId] = useState<number | null>(null);
   const [playbackTime, setPlaybackTime] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -94,7 +99,7 @@ export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps)
             <MapView
               cameras={displayCameras}
               selectedSegmentId={selectedSegmentId}
-              onSegmentSelect={setSelectedSegmentId}
+              onSegmentSelect={onSegmentSelect}
               isPlaybackMode={playbackTime !== null}
             />
           </div>

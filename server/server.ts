@@ -54,7 +54,7 @@ setInterval(() => {
       client.send(payload);
     }
   });
-}, 2000);
+}, 7000);
 
 const PORT = 4000;
 httpServer.listen(PORT, () => {
