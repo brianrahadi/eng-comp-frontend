@@ -39,25 +39,25 @@ export default function PlaybackControls({
   }, [timeRange]);
 
   return (
-    <div className="bg-white rounded-lg p-3 shadow-sm border">
+    <div className="bg-[#1E293B] rounded-lg p-3 border border-[#334155]">
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           <button
             onClick={onPlayPause}
-            className="px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+            className="px-3 py-1.5 bg-[#3B82F6] text-white rounded hover:bg-[#2563EB] text-sm"
           >
             {isPlaying ? "⏸ Pause" : "▶ Play"}
           </button>
           <button
             onClick={() => onTimeChange(null)}
-            className="px-3 py-1.5 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm"
+            className="px-3 py-1.5 bg-[#334155] text-[#F8FAFC] rounded hover:bg-[#475569] text-sm"
           >
             Live
           </button>
         </div>
         
         <div className="flex-1">
-          <div className="flex justify-between text-xs text-gray-500 mb-1">
+          <div className="flex justify-between text-xs text-[#94A3B8] mb-1">
             <span>{formatTime(timeRange.min)}</span>
             <span>{formatTime(timeRange.max)}</span>
           </div>
@@ -74,15 +74,15 @@ export default function PlaybackControls({
 
       <div className="flex items-center justify-between mt-2 text-xs">
         <div className="flex items-center gap-2">
-          <span className="text-gray-600">Duration: {duration} min</span>
+          <span className="text-[#CBD5E1]">Duration: {duration} min</span>
           {currentTime !== null && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded px-2 py-1 text-yellow-800">
+            <div className="bg-[#B45309] border border-[#FBBF24] rounded px-2 py-1 text-[#FBBF24]">
               ⏱ Playback Mode
             </div>
           )}
         </div>
         {currentTime !== null && (
-          <div className="text-sm font-medium text-gray-700">
+          <div className="text-sm font-medium text-[#F8FAFC]">
             {formatTime(currentTime)}
           </div>
         )}

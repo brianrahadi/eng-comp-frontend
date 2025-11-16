@@ -100,14 +100,14 @@ export default function TrendCharts({
 
   if (chartData.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-gray-500">
+      <div className="flex items-center justify-center h-full text-[#94A3B8]">
         No data available
       </div>
     );
   }
 
   return (
-    <div className="space-y-3" style={{ position: "relative", zIndex: 1 }}>
+    <div className="space-y-3" style={{ position: "relative", zIndex: 1, backgroundColor: "#0F172A"}}>
       <PlaybackControls
         timeRange={timeRange}
         currentTime={currentTime}
@@ -117,28 +117,28 @@ export default function TrendCharts({
       />
       
       {clickedSegmentId !== null && selectedSegmentId === null && (
-        <div className="bg-blue-50 border border-blue-200 rounded px-3 py-2 text-xs text-blue-800 flex items-center justify-between">
+        <div className="bg-[#1E3A8A] border border-[#3B82F6] rounded px-3 py-2 text-xs text-[#3B82F6] flex items-center justify-between">
           <span>Showing Seg {clickedSegmentId} and Average. Click again to show all.</span>
           <button
             onClick={() => setClickedSegmentId(null)}
-            className="text-blue-600 hover:text-blue-800 underline"
+            className="text-[#60A5FA] hover:text-[#93C5FD] underline"
           >
             Show All
           </button>
         </div>
       )}
 
-      <div className="bg-white rounded-lg p-2 shadow-sm" style={{ position: "relative" }}>
-        <h4 className="text-xs font-medium mb-1 text-gray-700">
+      <div className="bg-[#334155] rounded-lg p-2 border border-[#475569]" style={{ position: "relative" }}>
+        <h4 className="text-xs font-medium mb-1 text-[#F8FAFC]">
           {selectedSegmentId !== null ? "Water Level (%)" : "Water Level (%) - All Segments"}
         </h4>
         <ResponsiveContainer width="100%" height={120} style={{ position: "relative" }}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" tick={{ fontSize: 10 }} />
-            <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} width={40} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+            <XAxis dataKey="time" tick={{ fontSize: 10, fill: "#94A3B8" }} stroke="#64748B" />
+            <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#94A3B8" }} width={40} stroke="#64748B" />
             <Tooltip />
-            <Legend wrapperStyle={{ fontSize: "10px" }} />
+            <Legend wrapperStyle={{ fontSize: "10px", color: "#F8FAFC" }} />
             {selectedSegmentId !== null ? (
               <Line
                 type="monotone"
@@ -184,17 +184,17 @@ export default function TrendCharts({
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white rounded-lg p-2 shadow-sm" style={{ position: "relative" }}>
-        <h4 className="text-xs font-medium mb-1 text-gray-700">
+      <div className="bg-[#334155] rounded-lg p-2 border border-[#475569]" style={{ position: "relative" }}>
+        <h4 className="text-xs font-medium mb-1 text-[#F8FAFC]">
           {selectedSegmentId !== null ? "Light Level" : "Light Level - All Segments"}
         </h4>
         <ResponsiveContainer width="100%" height={120} style={{ position: "relative" }}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" tick={{ fontSize: 10 }} />
-            <YAxis tick={{ fontSize: 10 }} width={40} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+            <XAxis dataKey="time" tick={{ fontSize: 10, fill: "#94A3B8" }} stroke="#64748B" />
+            <YAxis tick={{ fontSize: 10, fill: "#94A3B8" }} width={40} stroke="#64748B" />
             <Tooltip />
-            <Legend wrapperStyle={{ fontSize: "10px" }} />
+            <Legend wrapperStyle={{ fontSize: "10px", color: "#F8FAFC" }} />
             {selectedSegmentId !== null ? (
               <Line
                 type="monotone"
@@ -240,18 +240,19 @@ export default function TrendCharts({
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white rounded-lg p-2 shadow-sm" style={{ position: "relative" }}>
-        <h4 className="text-xs font-medium mb-1 text-gray-700">
+      <div className="bg-[#334155] rounded-lg p-2 border border-[#475569]" style={{ position: "relative" }}>
+        <h4 className="text-xs font-medium mb-1 text-[#F8FAFC]">
           {selectedSegmentId !== null ? "Status Changes" : "Status Changes - All Segments"}
         </h4>
         <ResponsiveContainer width="100%" height={120} style={{ position: "relative" }}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" tick={{ fontSize: 10 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+            <XAxis dataKey="time" tick={{ fontSize: 10, fill: "#94A3B8" }} stroke="#64748B" />
             <YAxis
               domain={[0, 3]}
-              tick={{ fontSize: 10 }}
+              tick={{ fontSize: 10, fill: "#94A3B8" }}
               width={40}
+              stroke="#64748B"
               tickFormatter={(value) => {
                 const statuses = ["OK", "LOWLIGHT", "WARNING"];
                 return statuses[value] || "";
@@ -275,7 +276,7 @@ export default function TrendCharts({
                 return statuses[value] || "";
               }}
             />
-            <Legend wrapperStyle={{ fontSize: "10px" }} />
+            <Legend wrapperStyle={{ fontSize: "10px", color: "#F8FAFC" }} />
             {selectedSegmentId !== null ? (
               <Line
                 type="stepAfter"

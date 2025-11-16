@@ -15,9 +15,9 @@ import { getSegmentColor } from "../utils/colors";
 const SCALE_FACTOR = 200;
 
 function getStatusBorderColor(status: Camera["Status"]): string {
-  if (status === "WARNING") return "#ef4444";
-  if (status === "LOWLIGHT") return "#f59e0b";
-  return "#10b981";
+  if (status === "WARNING") return "#7F1D1D";
+  if (status === "LOWLIGHT") return "#B45309";
+  return "#065F46";
 }
 
 interface MapViewProps {
@@ -106,7 +106,7 @@ export default function MapView({
         target: `grid-${x}-${bounds.maxY}`,
         type: "straight",
         style: {
-          stroke: "#cbd5e1",
+          stroke: "#64748B",
           strokeWidth: 1,
           strokeDasharray: "4,4",
         },
@@ -122,7 +122,7 @@ export default function MapView({
         target: `grid-${bounds.maxX}-${y}`,
         type: "straight",
         style: {
-          stroke: "#cbd5e1",
+          stroke: "#64748B",
           strokeWidth: 1,
           strokeDasharray: "4,4",
         },
@@ -168,7 +168,7 @@ export default function MapView({
         target: "axis-x-end",
         type: "straight",
         style: {
-          stroke: "#94a3b8",
+          stroke: "#CBD5E1",
           strokeWidth: 2,
         },
         deletable: false,
@@ -179,7 +179,7 @@ export default function MapView({
         target: "axis-y-end",
         type: "straight",
         style: {
-          stroke: "#94a3b8",
+          stroke: "#CBD5E1",
           strokeWidth: 2,
         },
         deletable: false,
@@ -205,9 +205,9 @@ export default function MapView({
           alignItems: "center",
           justifyContent: "center",
           border: selectedSegmentId === c.SegmentID 
-            ? "4px solid #3b82f6" 
+            ? "4px solid #38BDF8" 
             : `3px solid ${getStatusBorderColor(c.Status)}`,
-          color: "#fff",
+          color: c.Status === "WARNING" ? "#fff" : "#000",
           fontWeight: "600",
           fontSize: "14px",
           transition: isPlaybackMode ? "background 0.3s ease, border 0.3s ease" : "none",
@@ -234,7 +234,7 @@ export default function MapView({
     hoverId != null ? cameras.find((c) => c.SegmentID === hoverId) : null;
 
   return (
-    <div className="relative h-[600px] w-full border rounded-lg bg-gray-50">
+    <div className="relative h-[600px] w-full border border-[#334155] rounded-lg bg-[#1E293B]">
       <ReactFlow
         nodes={nodesState}
         edges={edgesState}
