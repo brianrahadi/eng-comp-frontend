@@ -27,10 +27,12 @@ export default function DashboardPage() {
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       <div>
-        <h1 className="text-3xl font-bold text-gray-800">Sewer Camera Monitor</h1>
-        <p className="text-gray-600 mt-1">
-          Real-time monitoring of sewer pipe camera system status
-        </p>
+        <h1 className="text-3xl font-bold">
+          <span className="text-xl text-gray-800">PipeWatch</span>
+          <span className="text-sm text-gray-500">
+            &nbsp;- Real-time monitoring of sewer pipe camera system status
+          </span>
+        </h1>
       </div>
 
       <Dashboard cameras={data} />

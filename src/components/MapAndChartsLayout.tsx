@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import MapView from "./MapView";
 import TrendCharts from "./TrendCharts";
-import PlaybackControls from "./PlaybackControls";
 import type { Camera } from "../api/types";
 import { useHistoricalData } from "../hooks/useHistoricalData";
 
@@ -83,21 +82,6 @@ export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps)
         </button>
       </div>
 
-      <div className="space-y-2">
-        <PlaybackControls
-          timeRange={timeRange}
-          currentTime={playbackTime}
-          onTimeChange={setPlaybackTime}
-          isPlaying={isPlaying}
-          onPlayPause={() => setIsPlaying(!isPlaying)}
-        />
-        {playbackTime !== null && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 text-sm text-yellow-800">
-            ⏱ Playback Mode: Viewing historical data. Click "Live" to return to real-time.
-          </div>
-        )}
-      </div>
-
       <div
         className={`grid gap-4 ${
           activeTab === "both"
@@ -125,6 +109,10 @@ export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps)
                 selectedSegmentId={selectedSegmentId}
                 history={history}
                 currentTime={playbackTime}
+                timeRange={timeRange}
+                onTimeChange={setPlaybackTime}
+                isPlaying={isPlaying}
+                onPlayPause={() => setIsPlaying(!isPlaying)}
               />
             </div>
           </div>
