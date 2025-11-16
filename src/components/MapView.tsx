@@ -3,9 +3,10 @@ import ReactFlow, {
   Background,
   Controls,
   MiniMap,
-  Node,
   useNodesState,
+  useEdgesState,
 } from "reactflow";
+import type { Node, Edge } from "reactflow";
 import "reactflow/dist/style.css";
 import type { Camera } from "../api/types";
 import CameraTooltip from "./CameraTooltip";
@@ -21,6 +22,158 @@ function getNodeColor(status: Camera["Status"]): string {
 export default function MapView({ cameras }: { cameras: Camera[] }) {
   const [hoverId, setHoverId] = useState<number | null>(null);
 
+  const bounds = useMemo(() => {
+    if (!cameras.length) {
+      return { minX: -5, maxX: 10, minY: -5, maxY: 10 };
+    }
+    const xCoords = cameras.map((c) => c.Position[0]);
+    const yCoords = cameras.map((c) => c.Position[1]);
+    const padding = 2;
+    return {
+      minX: Math.floor(Math.min(...xCoords)) - padding,
+      maxX: Math.ceil(Math.max(...xCoords)) + padding,
+      minY: Math.floor(Math.min(...yCoords)) - padding,
+      maxY: Math.ceil(Math.max(...yCoords)) + padding,
+    };
+  }, [cameras]);
+
+  const axisNodes = useMemo<Node[]>(() => {
+    return [
+      {
+        id: "axis-origin",
+        position: { x: 0, y: 0 },
+        data: {},
+        style: { width: 0, height: 0, opacity: 0 },
+        selectable: false,
+        draggable: false,
+      },
+      {
+        id: "axis-x-end",
+        position: { x: bounds.maxX * SCALE_FACTOR, y: 0 },
+        data: {},
+        style: { width: 0, height: 0, opacity: 0 },
+        selectable: false,
+        draggable: false,
+      },
+      {
+        id: "axis-x-start",
+        position: { x: bounds.minX * SCALE_FACTOR, y: 0 },
+        data: {},
+        style: { width: 0, height: 0, opacity: 0 },
+        selectable: false,
+        draggable: false,
+      },
+      {
+        id: "axis-y-end",
+        position: { x: 0, y: bounds.maxY * SCALE_FACTOR },
+        data: {},
+        style: { width: 0, height: 0, opacity: 0 },
+        selectable: false,
+        draggable: false,
+      },
+      {
+        id: "axis-y-start",
+        position: { x: 0, y: bounds.minY * SCALE_FACTOR },
+        data: {},
+        style: { width: 0, height: 0, opacity: 0 },
+        selectable: false,
+        draggable: false,
+      },
+    ];
+  }, [bounds]);
+
+  const gridEdges = useMemo<Edge[]>(() => {
+    const edges: Edge[] = [];
+    
+    for (let x = bounds.minX; x <= bounds.maxX; x++) {
+      if (x === 0) continue;
+      edges.push({
+        id: `grid-v-${x}`,
+        source: `grid-${x}-${bounds.minY}`,
+        target: `grid-${x}-${bounds.maxY}`,
+        type: "straight",
+        style: {
+          stroke: "#cbd5e1",
+          strokeWidth: 1,
+          strokeDasharray: "4,4",
+        },
+        deletable: false,
+      });
+    }
+
+    for (let y = bounds.minY; y <= bounds.maxY; y++) {
+      if (y === 0) continue;
+      edges.push({
+        id: `grid-h-${y}`,
+        source: `grid-${bounds.minX}-${y}`,
+        target: `grid-${bounds.maxX}-${y}`,
+        type: "straight",
+        style: {
+          stroke: "#cbd5e1",
+          strokeWidth: 1,
+          strokeDasharray: "4,4",
+        },
+        deletable: false,
+      });
+    }
+
+    return edges;
+  }, [bounds]);
+
+  const gridNodes = useMemo<Node[]>(() => {
+    const nodes: Node[] = [];
+    
+    for (let x = bounds.minX; x <= bounds.maxX; x++) {
+      for (let y = bounds.minY; y <= bounds.maxY; y++) {
+        if (
+          (x === bounds.minX || x === bounds.maxX) ||
+          (y === bounds.minY || y === bounds.maxY)
+        ) {
+          nodes.push({
+            id: `grid-${x}-${y}`,
+            position: {
+              x: x * SCALE_FACTOR,
+              y: y * SCALE_FACTOR,
+            },
+            data: {},
+            style: { width: 0, height: 0, opacity: 0 },
+            selectable: false,
+            draggable: false,
+          });
+        }
+      }
+    }
+
+    return nodes;
+  }, [bounds]);
+
+  const axisEdges = useMemo<Edge[]>(() => {
+    return [
+      {
+        id: "axis-x",
+        source: "axis-x-start",
+        target: "axis-x-end",
+        type: "straight",
+        style: {
+          stroke: "#94a3b8",
+          strokeWidth: 2,
+        },
+        deletable: false,
+      },
+      {
+        id: "axis-y",
+        source: "axis-y-start",
+        target: "axis-y-end",
+        type: "straight",
+        style: {
+          stroke: "#94a3b8",
+          strokeWidth: 2,
+        },
+        deletable: false,
+      },
+    ];
+  }, []);
+
   const nodes = useMemo<Node[]>(
     () =>
       cameras.map((c) => ({
@@ -32,21 +185,34 @@ export default function MapView({ cameras }: { cameras: Camera[] }) {
         data: { label: `Seg ${c.SegmentID}` },
         style: {
           background: getNodeColor(c.Status),
-          borderRadius: "8px",
-          padding: "12px",
+          borderRadius: "50%",
+          width: "40px",
+          height: "40px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           border: "2px solid #333",
           color: "#000",
           fontWeight: "500",
+          fontSize: "12px",
         },
       })),
     [cameras]
   );
 
-  const [nodesState, setNodes, onNodesChange] = useNodesState(nodes);
+  const allNodes = useMemo(() => [...axisNodes, ...gridNodes, ...nodes], [axisNodes, gridNodes, nodes]);
+  const allEdges = useMemo(() => [...axisEdges, ...gridEdges], [axisEdges, gridEdges]);
+
+  const [nodesState, setNodes, onNodesChange] = useNodesState(allNodes);
+  const [edgesState, setEdges, onEdgesChange] = useEdgesState(allEdges);
 
   useEffect(() => {
-    setNodes(nodes);
-  }, [nodes, setNodes]);
+    setNodes(allNodes);
+  }, [allNodes, setNodes]);
+
+  useEffect(() => {
+    setEdges(allEdges);
+  }, [allEdges, setEdges]);
 
   const hoveredCam =
     hoverId != null ? cameras.find((c) => c.SegmentID === hoverId) : null;
@@ -55,14 +221,23 @@ export default function MapView({ cameras }: { cameras: Camera[] }) {
     <div className="relative h-[600px] w-full border rounded-lg bg-gray-50">
       <ReactFlow
         nodes={nodesState}
-        edges={[]}
+        edges={edgesState}
         onNodesChange={onNodesChange}
-        onNodeMouseEnter={(_, node) => setHoverId(Number(node.id))}
+        onEdgesChange={onEdgesChange}
+        onNodeMouseEnter={(_, node) => {
+          const id = Number(node.id);
+          if (!isNaN(id)) {
+            setHoverId(id);
+          }
+        }}
         onNodeMouseLeave={() => setHoverId(null)}
         fitView
         fitViewOptions={{ padding: 0.2 }}
+        nodesDraggable={false}
+        nodesConnectable={false}
+        elementsSelectable={false}
       >
-        <Background />
+        <Background gap={20} size={1} />
         <Controls />
         <MiniMap />
       </ReactFlow>
