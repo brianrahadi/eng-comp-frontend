@@ -107,7 +107,7 @@ export default function TrendCharts({
   }
 
   return (
-    <div className="space-y-3 p-3" style={{ position: "relative", zIndex: 1 }}>
+    <div className="space-y-3" style={{ position: "relative", zIndex: 1 }}>
       <PlaybackControls
         timeRange={timeRange}
         currentTime={currentTime}

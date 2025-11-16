@@ -102,7 +102,7 @@ export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps)
 
         {(activeTab === "charts" || activeTab === "both") && (
           <div>
-            <div className="bg-gray-50 rounded-lg h-[600px] overflow-y-auto">
+            <div className="bg-gray-50 rounded-lg">
               <TrendCharts
                 selectedSegmentId={selectedSegmentId}
                 history={history}
