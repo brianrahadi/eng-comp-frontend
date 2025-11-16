@@ -1,0 +1,47 @@
+[
+  {
+    "Position": [0.80601666867733, 0],
+    "SegmentID": 0,
+    "Water": 0,
+    "Light": 0.19398641081590726,
+    "Status": "OK"
+  },
+  {
+    "Position": [1, 1.7909335289376132],
+    "SegmentID": 1,
+    "Water": 0,
+    "Light": 1.0378277999840635,
+    "Status": "LOWLIGHT"
+  },
+  {
+    "Position": [2.627638086671508, 2],
+    "SegmentID": 2,
+    "Water": 0.4375,
+    "Light": 0.6600776406053994,
+    "Status": "OK"
+  },
+  {
+    "Position": [3.5, 1.2],
+    "SegmentID": 3,
+    "Water": 0.75,
+    "Light": 0.45,
+    "Status": "WARNING",
+    "ViewDescription": "High water level detected"
+  },
+  {
+    "Position": [4.2, 3.1],
+    "SegmentID": 4,
+    "Water": 0.15,
+    "Light": 0.85,
+    "Status": "OK"
+  },
+  {
+    "Position": [5.1, 2.5],
+    "SegmentID": 5,
+    "Water": 0.3,
+    "Light": 0.25,
+    "Status": "LOWLIGHT",
+    "ViewDescription": "Insufficient lighting"
+  }
+]
+

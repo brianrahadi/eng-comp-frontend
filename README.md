@@ -1,73 +1,133 @@
-# React + TypeScript + Vite
+# Sewer Camera Monitoring System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript application for monitoring sewer pipe camera systems in real-time. This application visualizes camera data on an interactive map, provides insights dashboard, and displays detailed camera information.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Interactive Map Visualization**: View all cameras on a coordinate-based map using React Flow
+- **Real-time Updates**: WebSocket integration for live camera data updates
+- **Insights Dashboard**: Overview of system health metrics
+- **Detailed Camera Table**: Comprehensive view of all camera data
+- **Tooltips**: Hover over camera nodes to see detailed information
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+- **Frontend**: React 19 + TypeScript + Vite
+- **State Management**: TanStack Query (React Query)
+- **Visualization**: React Flow
+- **Styling**: Tailwind CSS
+- **Backend**: Express.js + WebSocket (mock server)
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js (v20.19.0 or >=22.12.0 recommended)
+- npm or yarn
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Install dependencies:
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Running the Application
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+You need to run both the frontend and backend server:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Terminal 1 - Backend Server:**
+```bash
+npm run dev:server
 ```
+
+**Terminal 2 - Frontend:**
+```bash
+npm run dev
+```
+
+The application will be available at:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:4000
+- WebSocket: ws://localhost:4000
+
+## Project Structure
+
+```
+src/
+├── api/              # API service layer
+│   ├── types.ts      # TypeScript interfaces
+│   └── cameraService.ts  # REST API client
+├── components/       # React components
+│   ├── MapView.tsx   # Main map visualization
+│   ├── CameraTooltip.tsx  # Tooltip component
+│   ├── Dashboard.tsx # Insights dashboard
+│   └── CameraTable.tsx    # Data table
+├── hooks/            # Custom React hooks
+│   ├── useCameraData.ts   # Camera data fetching
+│   └── useWebSocket.ts    # WebSocket connection
+├── pages/            # Page components
+│   └── DashboardPage.tsx  # Main dashboard page
+└── utils/            # Utility functions
+    └── insights.ts   # Insight calculations
+
+server/
+├── server.ts         # Express + WebSocket server
+└── seed.json         # Sample camera data
+```
+
+## Camera Data Structure
+
+Each camera entry contains:
+- `Position`: [X, Y] coordinates relative to starting point (0,0)
+- `SegmentID`: Unique identifier for the camera
+- `Water`: Water submersion percentage (0-1)
+- `Light`: Light level (0-255 scale, normalized)
+- `Status`: Camera status (OK, LOWLIGHT, WARNING)
+- `ViewDescription`: Optional descriptive text
+
+## Coordinate System
+
+- Starting point: (0, 0)
+- X > 0: Right of starting point
+- Y > 0: Downward from starting point
+- Negative values: Exit points (-1)
+
+## Status Indicators
+
+- **OK** (Green): Normal operation
+- **LOWLIGHT** (Yellow): Insufficient lighting detected
+- **WARNING** (Red): High water level or critical issue
+
+## Development
+
+### Building for Production
+
+```bash
+npm run build
+```
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+## Future Improvements
+
+- Historical data playback with time slider
+- Alert thresholds configuration
+- Auto-layout connections between segments
+- Export insights to CSV
+- Multi-camera comparison panel
+- Authentication and user management
+
+## Competition Notes
+
+This application is designed for the Engineering Competition 2025 Programming Category. It demonstrates:
+
+- Clean, maintainable code architecture
+- Real-time data visualization
+- Consumer-friendly interface
+- REST API and WebSocket integration
+- Responsive design with modern UI
