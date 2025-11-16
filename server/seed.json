@@ -4,6 +4,7 @@
     "SegmentID": 0,
     "Water": 0,
     "Light": 0.19398641081590726,
+    "CameraLight": 5,
     "Status": "OK"
   },
   {
@@ -11,6 +12,7 @@
     "SegmentID": 1,
     "Water": 0,
     "Light": 1.0378277999840635,
+    "CameraLight": 4,
     "Status": "LOWLIGHT"
   },
   {
@@ -18,6 +20,7 @@
     "SegmentID": 2,
     "Water": 0.4375,
     "Light": 0.6600776406053994,
+    "CameraLight": 3,
     "Status": "OK"
   },
   {
@@ -25,6 +28,7 @@
     "SegmentID": 3,
     "Water": 0.75,
     "Light": 0.45,
+    "CameraLight": 2,
     "Status": "WARNING",
     "ViewDescription": "High water level detected"
   },
@@ -33,6 +37,7 @@
     "SegmentID": 4,
     "Water": 0.15,
     "Light": 0.85,
+    "CameraLight": 5,
     "Status": "OK"
   },
   {
@@ -40,6 +45,7 @@
     "SegmentID": 5,
     "Water": 0.3,
     "Light": 0.25,
+    "CameraLight": 1,
     "Status": "LOWLIGHT",
     "ViewDescription": "Insufficient lighting"
   }

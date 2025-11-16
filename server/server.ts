@@ -38,6 +38,11 @@ setInterval(() => {
     const Water = Math.min(1, Math.max(0, c.Water + jitter(-0.02, 0.02)));
     const Light = Math.max(0, Math.min(1, c.Light + jitter(-0.05, 0.05)));
     
+    let CameraLight = c.CameraLight ?? 3;
+    if (Math.random() < 0.1) {
+      CameraLight = Math.max(1, Math.min(5, CameraLight + (Math.random() < 0.5 ? -1 : 1)));
+    }
+    
     let Status = "OK";
     if (Light < 0.3) {
       Status = "LOWLIGHT";
@@ -45,7 +50,7 @@ setInterval(() => {
       Status = "WARNING";
     }
 
-    return { ...c, Water, Light, Status };
+    return { ...c, Water, Light, CameraLight, Status };
   });
 
   const payload = JSON.stringify(cameras);

@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import DashboardPage from "./pages/DashboardPage";
+import { FilterPanel } from './utils/filterPanel';  // or './utils/FilterPanel' depending on where you put it
 
 const queryClient = new QueryClient({
   defaultOptions: {

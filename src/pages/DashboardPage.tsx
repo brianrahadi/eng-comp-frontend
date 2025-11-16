@@ -35,19 +35,18 @@ export default function DashboardPage() {
       <div ref={pageRef} className="py-1 px-6 space-y-6">
         <Dashboard cameras={data} />
 
-        <MapAndChartsLayout 
-          cameras={data} 
+        <MapAndChartsLayout
+          cameras={data}
           selectedSegmentId={selectedSegmentId}
           onSegmentSelect={setSelectedSegmentId}
         />
 
         <div>
-          <h2 className="text-xl font-semibold mb-3 text-[#F8FAFC]">Camera Details</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <InsightsCard cameras={data} selectedSegmentId={selectedSegmentId} />
             <div className="bg-[#1E293B] rounded-lg border border-[#334155] p-4">
               <CameraTable cameras={data} />
             </div>
-            <InsightsCard cameras={data} selectedSegmentId={selectedSegmentId} />
           </div>
         </div>
       </div>
