@@ -1,10 +1,13 @@
+import { useRef } from "react";
 import { useCameraData } from "../hooks/useCameraData";
 import MapAndChartsLayout from "../components/MapAndChartsLayout";
 import Dashboard from "../components/Dashboard";
 import CameraTable from "../components/CameraTable";
+import Header from "../components/Header";
 
 export default function DashboardPage() {
   const { data, isLoading, error } = useCameraData();
+  const pageRef = useRef<HTMLDivElement>(null);
 
   if (isLoading) {
     return (
@@ -25,24 +28,18 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-6 space-y-6 bg-[#0F172A] min-h-screen text-[#F8FAFC]">
-      <div>
-        <h1 className="text-3xl font-bold">
-          <span className="text-xl text-[#F8FAFC]">PipeWatch</span>
-          <span className="text-sm text-[#94A3B8]">
-            &nbsp;- Real-time monitoring of sewer pipe camera system status
-          </span>
-        </h1>
-      </div>
+    <div className="bg-[#0F172A] min-h-screen text-[#F8FAFC]">
+      <Header pageRef={pageRef} />
+      <div ref={pageRef} className="py-1 px-6 space-y-6">
+        <Dashboard cameras={data} />
 
-      <Dashboard cameras={data} />
+        <MapAndChartsLayout cameras={data} />
 
-      <MapAndChartsLayout cameras={data} />
-
-      <div>
-        <h2 className="text-xl font-semibold mb-3 text-[#F8FAFC]">Camera Details</h2>
-        <div className="bg-[#1E293B] rounded-lg border border-[#334155] p-4">
-          <CameraTable cameras={data} />
+        <div>
+          <h2 className="text-xl font-semibold mb-3 text-[#F8FAFC]">Camera Details</h2>
+          <div className="bg-[#1E293B] rounded-lg border border-[#334155] p-4">
+            <CameraTable cameras={data} />
+          </div>
         </div>
       </div>
     </div>
