@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   LineChart,
   Line,
@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import type { Camera } from "../api/types";
 import PlaybackControls from "./PlaybackControls";
+import { SEGMENT_COLORS, getSegmentColor } from "../utils/colors";
 
 interface TrendChartsProps {
   selectedSegmentId: number | null;
@@ -31,6 +32,10 @@ export default function TrendCharts({
   isPlaying,
   onPlayPause,
 }: TrendChartsProps) {
+  const [hoveredSegmentId, setHoveredSegmentId] = useState<number | null>(null);
+  const [clickedSegmentId, setClickedSegmentId] = useState<number | null>(null);
+
+  const activeSegmentId = clickedSegmentId ?? hoveredSegmentId;
   const { chartData, segmentIds } = useMemo(() => {
     if (history.length === 0) return { chartData: [], segmentIds: [] };
 
@@ -110,6 +115,18 @@ export default function TrendCharts({
         isPlaying={isPlaying}
         onPlayPause={onPlayPause}
       />
+      
+      {clickedSegmentId !== null && selectedSegmentId === null && (
+        <div className="bg-blue-50 border border-blue-200 rounded px-3 py-2 text-xs text-blue-800 flex items-center justify-between">
+          <span>Showing Seg {clickedSegmentId} and Average. Click again to show all.</span>
+          <button
+            onClick={() => setClickedSegmentId(null)}
+            className="text-blue-600 hover:text-blue-800 underline"
+          >
+            Show All
+          </button>
+        </div>
+      )}
 
       <div className="bg-white rounded-lg p-2 shadow-sm" style={{ position: "relative" }}>
         <h4 className="text-xs font-medium mb-1 text-gray-700">
@@ -133,21 +150,30 @@ export default function TrendCharts({
               />
             ) : (
               <>
-                {segmentIds.map((segmentId) => (
-                  <Line
-                    key={segmentId}
-                    type="monotone"
-                    dataKey={`water_${segmentId}`}
-                    stroke="#94a3b8"
-                    strokeWidth={1}
-                    dot={false}
-                    name={`Seg ${segmentId}`}
-                  />
-                ))}
+                {segmentIds.map((segmentId) => {
+                  const isActive = activeSegmentId === segmentId || activeSegmentId === null;
+                  const color = getSegmentColor(segmentId);
+                  return (
+                    <Line
+                      key={segmentId}
+                      type="monotone"
+                      dataKey={`water_${segmentId}`}
+                      stroke={color}
+                      strokeWidth={isActive ? 1.5 : 0.5}
+                      strokeOpacity={isActive ? 1 : 0.2}
+                      dot={false}
+                      name={`Seg ${segmentId}`}
+                      onMouseEnter={() => setHoveredSegmentId(segmentId)}
+                      onMouseLeave={() => setHoveredSegmentId(null)}
+                      onClick={() => setClickedSegmentId(clickedSegmentId === segmentId ? null : segmentId)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  );
+                })}
                 <Line
                   type="monotone"
                   dataKey="avgWater"
-                  stroke="#ef4444"
+                  stroke="#000000"
                   strokeWidth={2}
                   dot={false}
                   name="Average"
@@ -180,21 +206,30 @@ export default function TrendCharts({
               />
             ) : (
               <>
-                {segmentIds.map((segmentId) => (
-                  <Line
-                    key={segmentId}
-                    type="monotone"
-                    dataKey={`light_${segmentId}`}
-                    stroke="#94a3b8"
-                    strokeWidth={1}
-                    dot={false}
-                    name={`Seg ${segmentId}`}
-                  />
-                ))}
+                {segmentIds.map((segmentId) => {
+                  const isActive = activeSegmentId === segmentId || activeSegmentId === null;
+                  const color = getSegmentColor(segmentId);
+                  return (
+                    <Line
+                      key={segmentId}
+                      type="monotone"
+                      dataKey={`light_${segmentId}`}
+                      stroke={color}
+                      strokeWidth={isActive ? 1.5 : 0.5}
+                      strokeOpacity={isActive ? 1 : 0.2}
+                      dot={false}
+                      name={`Seg ${segmentId}`}
+                      onMouseEnter={() => setHoveredSegmentId(segmentId)}
+                      onMouseLeave={() => setHoveredSegmentId(null)}
+                      onClick={() => setClickedSegmentId(clickedSegmentId === segmentId ? null : segmentId)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  );
+                })}
                 <Line
                   type="monotone"
                   dataKey="avgLight"
-                  stroke="#ef4444"
+                  stroke="#000000"
                   strokeWidth={2}
                   dot={false}
                   name="Average"
@@ -251,17 +286,26 @@ export default function TrendCharts({
                 name="Status"
               />
             ) : (
-              segmentIds.map((segmentId) => (
-                <Line
-                  key={segmentId}
-                  type="stepAfter"
-                  dataKey={`status_${segmentId}`}
-                  stroke="#94a3b8"
-                  strokeWidth={1}
-                  dot={false}
-                  name={`Seg ${segmentId}`}
-                />
-              ))
+              segmentIds.map((segmentId) => {
+                const isActive = activeSegmentId === segmentId || activeSegmentId === null;
+                const color = SEGMENT_COLORS[segmentId % SEGMENT_COLORS.length];
+                return (
+                  <Line
+                    key={segmentId}
+                    type="stepAfter"
+                    dataKey={`status_${segmentId}`}
+                    stroke={color}
+                    strokeWidth={isActive ? 1.5 : 0.5}
+                    strokeOpacity={isActive ? 1 : 0.2}
+                    dot={false}
+                    name={`Seg ${segmentId}`}
+                    onMouseEnter={() => setHoveredSegmentId(segmentId)}
+                    onMouseLeave={() => setHoveredSegmentId(null)}
+                    onClick={() => setClickedSegmentId(clickedSegmentId === segmentId ? null : segmentId)}
+                    style={{ cursor: "pointer" }}
+                  />
+                );
+              })
             )}
           </LineChart>
         </ResponsiveContainer>

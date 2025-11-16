@@ -10,13 +10,14 @@ import type { Node, Edge } from "reactflow";
 import "reactflow/dist/style.css";
 import type { Camera } from "../api/types";
 import CameraTooltip from "./CameraTooltip";
+import { getSegmentColor } from "../utils/colors";
 
 const SCALE_FACTOR = 200;
 
-function getNodeColor(status: Camera["Status"]): string {
-  if (status === "WARNING") return "#fca5a5";
-  if (status === "LOWLIGHT") return "#fde68a";
-  return "#86efac";
+function getStatusBorderColor(status: Camera["Status"]): string {
+  if (status === "WARNING") return "#ef4444";
+  if (status === "LOWLIGHT") return "#f59e0b";
+  return "#10b981";
 }
 
 interface MapViewProps {
@@ -196,17 +197,19 @@ export default function MapView({
         },
         data: { label: `Seg ${c.SegmentID}` },
         style: {
-          background: getNodeColor(c.Status),
+          background: getSegmentColor(c.SegmentID),
           borderRadius: "50%",
-          width: "40px",
-          height: "40px",
+          width: "60px",
+          height: "60px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          border: selectedSegmentId === c.SegmentID ? "3px solid #3b82f6" : "2px solid #333",
-          color: "#000",
-          fontWeight: "500",
-          fontSize: "12px",
+          border: selectedSegmentId === c.SegmentID 
+            ? "4px solid #3b82f6" 
+            : `3px solid ${getStatusBorderColor(c.Status)}`,
+          color: "#fff",
+          fontWeight: "600",
+          fontSize: "14px",
           transition: isPlaybackMode ? "background 0.3s ease, border 0.3s ease" : "none",
         },
       })),
