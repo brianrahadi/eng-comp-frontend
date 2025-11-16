@@ -1,23 +1,28 @@
+import { useRef, useState } from "react";
 import { useCameraData } from "../hooks/useCameraData";
 import MapAndChartsLayout from "../components/MapAndChartsLayout";
 import Dashboard from "../components/Dashboard";
 import CameraTable from "../components/CameraTable";
+import Header from "../components/Header";
+import InsightsCard from "../components/InsightsCard";
 
 export default function DashboardPage() {
   const { data, isLoading, error } = useCameraData();
+  const pageRef = useRef<HTMLDivElement>(null);
+  const [selectedSegmentId, setSelectedSegmentId] = useState<number | null>(null);
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg">Loading camera data...</div>
+      <div className="flex items-center justify-center h-screen bg-[#0F172A]">
+        <div className="text-lg text-[#F8FAFC]">Loading camera data...</div>
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg text-red-600">
+      <div className="flex items-center justify-center h-screen bg-[#0F172A]">
+        <div className="text-lg text-[#EF4444]">
           Failed to load cameras. {error instanceof Error ? error.message : "Unknown error"}
         </div>
       </div>
@@ -25,24 +30,25 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      <div>
-        <h1 className="text-3xl font-bold">
-          <span className="text-xl text-gray-800">PipeWatch</span>
-          <span className="text-sm text-gray-500">
-            &nbsp;- Real-time monitoring of sewer pipe camera system status
-          </span>
-        </h1>
-      </div>
+    <div className="bg-[#0F172A] min-h-screen text-[#F8FAFC]">
+      <Header pageRef={pageRef} />
+      <div ref={pageRef} className="py-1 px-6 space-y-6">
+        <Dashboard cameras={data} />
 
-      <Dashboard cameras={data} />
+        <MapAndChartsLayout 
+          cameras={data} 
+          selectedSegmentId={selectedSegmentId}
+          onSegmentSelect={setSelectedSegmentId}
+        />
 
-      <MapAndChartsLayout cameras={data} />
-
-      <div>
-        <h2 className="text-xl font-semibold mb-3 text-gray-700">Camera Details</h2>
-        <div className="bg-white rounded-lg shadow-sm p-4">
-          <CameraTable cameras={data} />
+        <div>
+          <h2 className="text-xl font-semibold mb-3 text-[#F8FAFC]">Camera Details</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-[#1E293B] rounded-lg border border-[#334155] p-4">
+              <CameraTable cameras={data} />
+            </div>
+            <InsightsCard cameras={data} selectedSegmentId={selectedSegmentId} />
+          </div>
         </div>
       </div>
     </div>

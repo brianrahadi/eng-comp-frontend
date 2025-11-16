@@ -6,13 +6,18 @@ import { useHistoricalData } from "../hooks/useHistoricalData";
 
 interface MapAndChartsLayoutProps {
   cameras: Camera[];
+  selectedSegmentId: number | null;
+  onSegmentSelect: (segmentId: number | null) => void;
 }
 
 type Tab = "map" | "charts" | "both";
 
-export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps) {
+export default function MapAndChartsLayout({ 
+  cameras, 
+  selectedSegmentId, 
+  onSegmentSelect 
+}: MapAndChartsLayoutProps) {
   const [activeTab, setActiveTab] = useState<Tab>("both");
-  const [selectedSegmentId, setSelectedSegmentId] = useState<number | null>(null);
   const [playbackTime, setPlaybackTime] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -49,13 +54,13 @@ export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps)
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 border-b">
+      <div className="flex gap-2 border-b border-[#334155]">
         <button
           onClick={() => setActiveTab("map")}
           className={`px-4 py-2 font-medium ${
             activeTab === "map"
-              ? "border-b-2 border-blue-600 text-blue-600"
-              : "text-gray-600 hover:text-gray-800"
+              ? "border-b-2 border-[#3B82F6] text-[#3B82F6]"
+              : "text-[#94A3B8] hover:text-[#CBD5E1]"
           }`}
         >
           Map
@@ -64,8 +69,8 @@ export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps)
           onClick={() => setActiveTab("charts")}
           className={`px-4 py-2 font-medium ${
             activeTab === "charts"
-              ? "border-b-2 border-blue-600 text-blue-600"
-              : "text-gray-600 hover:text-gray-800"
+              ? "border-b-2 border-[#3B82F6] text-[#3B82F6]"
+              : "text-[#94A3B8] hover:text-[#CBD5E1]"
           }`}
         >
           Charts
@@ -74,8 +79,8 @@ export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps)
           onClick={() => setActiveTab("both")}
           className={`px-4 py-2 font-medium ${
             activeTab === "both"
-              ? "border-b-2 border-blue-600 text-blue-600"
-              : "text-gray-600 hover:text-gray-800"
+              ? "border-b-2 border-[#3B82F6] text-[#3B82F6]"
+              : "text-[#94A3B8] hover:text-[#CBD5E1]"
           }`}
         >
           Both
@@ -94,7 +99,7 @@ export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps)
             <MapView
               cameras={displayCameras}
               selectedSegmentId={selectedSegmentId}
-              onSegmentSelect={setSelectedSegmentId}
+              onSegmentSelect={onSegmentSelect}
               isPlaybackMode={playbackTime !== null}
             />
           </div>
@@ -102,7 +107,7 @@ export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps)
 
         {(activeTab === "charts" || activeTab === "both") && (
           <div>
-            <div className="bg-gray-50 rounded-lg h-[600px] overflow-y-auto">
+            <div className="bg-[#1E293B] rounded-lg border border-[#334155]">
               <TrendCharts
                 selectedSegmentId={selectedSegmentId}
                 history={history}

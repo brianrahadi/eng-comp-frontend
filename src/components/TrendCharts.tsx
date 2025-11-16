@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   LineChart,
   Line,
@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import type { Camera } from "../api/types";
 import PlaybackControls from "./PlaybackControls";
+import { SEGMENT_COLORS, getSegmentColor } from "../utils/colors";
 
 interface TrendChartsProps {
   selectedSegmentId: number | null;
@@ -31,6 +32,21 @@ export default function TrendCharts({
   isPlaying,
   onPlayPause,
 }: TrendChartsProps) {
+  const [hoveredSegmentId, setHoveredSegmentId] = useState<number | null>(null);
+  const [clickedSegmentId, setClickedSegmentId] = useState<number | null>(null);
+
+  const activeSegmentId = clickedSegmentId ?? hoveredSegmentId;
+
+  const formatWaterTooltip = (value: number) => {
+    if (value === null || value === undefined) return value;
+    return `${Number(value).toFixed(2)}%`;
+  };
+
+  const formatLightTooltip = (value: number) => {
+    if (value === null || value === undefined) return value;
+    return Number(value).toFixed(2);
+  };
+
   const { chartData, segmentIds } = useMemo(() => {
     if (history.length === 0) return { chartData: [], segmentIds: [] };
 
@@ -95,14 +111,14 @@ export default function TrendCharts({
 
   if (chartData.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-gray-500">
+      <div className="flex items-center justify-center h-full text-[#94A3B8]">
         No data available
       </div>
     );
   }
 
   return (
-    <div className="space-y-3 p-3" style={{ position: "relative", zIndex: 1 }}>
+    <div className="space-y-3" style={{ position: "relative", zIndex: 1, backgroundColor: "#0F172A"}}>
       <PlaybackControls
         timeRange={timeRange}
         currentTime={currentTime}
@@ -110,18 +126,32 @@ export default function TrendCharts({
         isPlaying={isPlaying}
         onPlayPause={onPlayPause}
       />
+      
+      {clickedSegmentId !== null && selectedSegmentId === null && (
+        <div className="bg-[#1E3A8A] border border-[#3B82F6] rounded px-3 py-2 text-xs text-[#3B82F6] flex items-center justify-between">
+          <span>Showing Seg {clickedSegmentId} and Average. Click again to show all.</span>
+          <button
+            onClick={() => setClickedSegmentId(null)}
+            className="text-[#60A5FA] hover:text-[#93C5FD] underline"
+          >
+            Show All
+          </button>
+        </div>
+      )}
 
-      <div className="bg-white rounded-lg p-2 shadow-sm" style={{ position: "relative" }}>
-        <h4 className="text-xs font-medium mb-1 text-gray-700">
+      <div className="bg-[#334155] rounded-lg p-2 border border-[#475569]" style={{ position: "relative" }}>
+        <h4 className="text-xs font-medium mb-1 text-[#F8FAFC]">
           {selectedSegmentId !== null ? "Water Level (%)" : "Water Level (%) - All Segments"}
         </h4>
         <ResponsiveContainer width="100%" height={120} style={{ position: "relative" }}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" tick={{ fontSize: 10 }} />
-            <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} width={40} />
-            <Tooltip />
-            <Legend wrapperStyle={{ fontSize: "10px" }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+            <XAxis dataKey="time" tick={{ fontSize: 10, fill: "#94A3B8" }} stroke="#64748B" />
+            <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#94A3B8" }} width={40} stroke="#64748B" />
+            <Tooltip
+              formatter={(value: number) => formatWaterTooltip(value)}
+            />
+            <Legend wrapperStyle={{ fontSize: "10px", color: "#F8FAFC" }} />
             {selectedSegmentId !== null ? (
               <Line
                 type="monotone"
@@ -133,21 +163,30 @@ export default function TrendCharts({
               />
             ) : (
               <>
-                {segmentIds.map((segmentId) => (
-                  <Line
-                    key={segmentId}
-                    type="monotone"
-                    dataKey={`water_${segmentId}`}
-                    stroke="#94a3b8"
-                    strokeWidth={1}
-                    dot={false}
-                    name={`Seg ${segmentId}`}
-                  />
-                ))}
+                {segmentIds.map((segmentId) => {
+                  const isActive = activeSegmentId === segmentId || activeSegmentId === null;
+                  const color = getSegmentColor(segmentId);
+                  return (
+                    <Line
+                      key={segmentId}
+                      type="monotone"
+                      dataKey={`water_${segmentId}`}
+                      stroke={color}
+                      strokeWidth={isActive ? 1.5 : 0.5}
+                      strokeOpacity={isActive ? 1 : 0.2}
+                      dot={false}
+                      name={`Seg ${segmentId}`}
+                      onMouseEnter={() => setHoveredSegmentId(segmentId)}
+                      onMouseLeave={() => setHoveredSegmentId(null)}
+                      onClick={() => setClickedSegmentId(clickedSegmentId === segmentId ? null : segmentId)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  );
+                })}
                 <Line
                   type="monotone"
                   dataKey="avgWater"
-                  stroke="#ef4444"
+                  stroke="#000000"
                   strokeWidth={2}
                   dot={false}
                   name="Average"
@@ -158,17 +197,19 @@ export default function TrendCharts({
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white rounded-lg p-2 shadow-sm" style={{ position: "relative" }}>
-        <h4 className="text-xs font-medium mb-1 text-gray-700">
+      <div className="bg-[#334155] rounded-lg p-2 border border-[#475569]" style={{ position: "relative" }}>
+        <h4 className="text-xs font-medium mb-1 text-[#F8FAFC]">
           {selectedSegmentId !== null ? "Light Level" : "Light Level - All Segments"}
         </h4>
         <ResponsiveContainer width="100%" height={120} style={{ position: "relative" }}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" tick={{ fontSize: 10 }} />
-            <YAxis tick={{ fontSize: 10 }} width={40} />
-            <Tooltip />
-            <Legend wrapperStyle={{ fontSize: "10px" }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+            <XAxis dataKey="time" tick={{ fontSize: 10, fill: "#94A3B8" }} stroke="#64748B" />
+            <YAxis tick={{ fontSize: 10, fill: "#94A3B8" }} width={40} stroke="#64748B" />
+            <Tooltip
+              formatter={(value: number) => formatLightTooltip(value)}
+            />
+            <Legend wrapperStyle={{ fontSize: "10px", color: "#F8FAFC" }} />
             {selectedSegmentId !== null ? (
               <Line
                 type="monotone"
@@ -180,21 +221,30 @@ export default function TrendCharts({
               />
             ) : (
               <>
-                {segmentIds.map((segmentId) => (
-                  <Line
-                    key={segmentId}
-                    type="monotone"
-                    dataKey={`light_${segmentId}`}
-                    stroke="#94a3b8"
-                    strokeWidth={1}
-                    dot={false}
-                    name={`Seg ${segmentId}`}
-                  />
-                ))}
+                {segmentIds.map((segmentId) => {
+                  const isActive = activeSegmentId === segmentId || activeSegmentId === null;
+                  const color = getSegmentColor(segmentId);
+                  return (
+                    <Line
+                      key={segmentId}
+                      type="monotone"
+                      dataKey={`light_${segmentId}`}
+                      stroke={color}
+                      strokeWidth={isActive ? 1.5 : 0.5}
+                      strokeOpacity={isActive ? 1 : 0.2}
+                      dot={false}
+                      name={`Seg ${segmentId}`}
+                      onMouseEnter={() => setHoveredSegmentId(segmentId)}
+                      onMouseLeave={() => setHoveredSegmentId(null)}
+                      onClick={() => setClickedSegmentId(clickedSegmentId === segmentId ? null : segmentId)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  );
+                })}
                 <Line
                   type="monotone"
                   dataKey="avgLight"
-                  stroke="#ef4444"
+                  stroke="#000000"
                   strokeWidth={2}
                   dot={false}
                   name="Average"
@@ -205,18 +255,19 @@ export default function TrendCharts({
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white rounded-lg p-2 shadow-sm" style={{ position: "relative" }}>
-        <h4 className="text-xs font-medium mb-1 text-gray-700">
+      <div className="bg-[#334155] rounded-lg p-2 border border-[#475569]" style={{ position: "relative" }}>
+        <h4 className="text-xs font-medium mb-1 text-[#F8FAFC]">
           {selectedSegmentId !== null ? "Status Changes" : "Status Changes - All Segments"}
         </h4>
         <ResponsiveContainer width="100%" height={120} style={{ position: "relative" }}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" tick={{ fontSize: 10 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+            <XAxis dataKey="time" tick={{ fontSize: 10, fill: "#94A3B8" }} stroke="#64748B" />
             <YAxis
               domain={[0, 3]}
-              tick={{ fontSize: 10 }}
+              tick={{ fontSize: 10, fill: "#94A3B8" }}
               width={40}
+              stroke="#64748B"
               tickFormatter={(value) => {
                 const statuses = ["OK", "LOWLIGHT", "WARNING"];
                 return statuses[value] || "";
@@ -240,7 +291,7 @@ export default function TrendCharts({
                 return statuses[value] || "";
               }}
             />
-            <Legend wrapperStyle={{ fontSize: "10px" }} />
+            <Legend wrapperStyle={{ fontSize: "10px", color: "#F8FAFC" }} />
             {selectedSegmentId !== null ? (
               <Line
                 type="stepAfter"
@@ -251,17 +302,26 @@ export default function TrendCharts({
                 name="Status"
               />
             ) : (
-              segmentIds.map((segmentId) => (
-                <Line
-                  key={segmentId}
-                  type="stepAfter"
-                  dataKey={`status_${segmentId}`}
-                  stroke="#94a3b8"
-                  strokeWidth={1}
-                  dot={false}
-                  name={`Seg ${segmentId}`}
-                />
-              ))
+              segmentIds.map((segmentId) => {
+                const isActive = activeSegmentId === segmentId || activeSegmentId === null;
+                const color = SEGMENT_COLORS[segmentId % SEGMENT_COLORS.length];
+                return (
+                  <Line
+                    key={segmentId}
+                    type="stepAfter"
+                    dataKey={`status_${segmentId}`}
+                    stroke={color}
+                    strokeWidth={isActive ? 1.5 : 0.5}
+                    strokeOpacity={isActive ? 1 : 0.2}
+                    dot={false}
+                    name={`Seg ${segmentId}`}
+                    onMouseEnter={() => setHoveredSegmentId(segmentId)}
+                    onMouseLeave={() => setHoveredSegmentId(null)}
+                    onClick={() => setClickedSegmentId(clickedSegmentId === segmentId ? null : segmentId)}
+                    style={{ cursor: "pointer" }}
+                  />
+                );
+              })
             )}
           </LineChart>
         </ResponsiveContainer>
