@@ -91,7 +91,6 @@ export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps)
       >
         {(activeTab === "map" || activeTab === "both") && (
           <div>
-            <h2 className="text-xl font-semibold mb-3 text-gray-700">Camera Map</h2>
             <MapView
               cameras={displayCameras}
               selectedSegmentId={selectedSegmentId}
@@ -103,7 +102,6 @@ export default function MapAndChartsLayout({ cameras }: MapAndChartsLayoutProps)
 
         {(activeTab === "charts" || activeTab === "both") && (
           <div>
-            <h2 className="text-xl font-semibold mb-3 text-gray-700">Trend Charts</h2>
             <div className="bg-gray-50 rounded-lg h-[600px] overflow-y-auto">
               <TrendCharts
                 selectedSegmentId={selectedSegmentId}

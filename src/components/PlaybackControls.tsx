@@ -56,6 +56,11 @@ export default function PlaybackControls({
         <div className="text-sm text-gray-600">
           Duration: {duration} min
         </div>
+        {currentTime !== null && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded px-2 py-1 text-xs text-yellow-800">
+            ⏱ Playback Mode
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">

@@ -102,20 +102,7 @@ export default function TrendCharts({
   }
 
   return (
-    <div className="space-y-3 p-3">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-base font-semibold">
-          {selectedSegmentId !== null
-            ? `Segment ${selectedSegmentId} - Last 30 Seconds`
-            : "All Segments - Last 30 Seconds"}
-        </h3>
-        {currentTime !== null && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded px-2 py-1 text-xs text-yellow-800">
-            ⏱ Playback Mode
-          </div>
-        )}
-      </div>
-
+    <div className="space-y-3 p-3" style={{ position: "relative", zIndex: 1 }}>
       <PlaybackControls
         timeRange={timeRange}
         currentTime={currentTime}
@@ -124,11 +111,11 @@ export default function TrendCharts({
         onPlayPause={onPlayPause}
       />
 
-      <div className="bg-white rounded-lg p-2 shadow-sm">
+      <div className="bg-white rounded-lg p-2 shadow-sm" style={{ position: "relative" }}>
         <h4 className="text-xs font-medium mb-1 text-gray-700">
           {selectedSegmentId !== null ? "Water Level (%)" : "Water Level (%) - All Segments"}
         </h4>
-        <ResponsiveContainer width="100%" height={120}>
+        <ResponsiveContainer width="100%" height={120} style={{ position: "relative" }}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="time" tick={{ fontSize: 10 }} />
@@ -171,11 +158,11 @@ export default function TrendCharts({
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white rounded-lg p-2 shadow-sm">
+      <div className="bg-white rounded-lg p-2 shadow-sm" style={{ position: "relative" }}>
         <h4 className="text-xs font-medium mb-1 text-gray-700">
           {selectedSegmentId !== null ? "Light Level" : "Light Level - All Segments"}
         </h4>
-        <ResponsiveContainer width="100%" height={120}>
+        <ResponsiveContainer width="100%" height={120} style={{ position: "relative" }}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="time" tick={{ fontSize: 10 }} />
@@ -218,11 +205,11 @@ export default function TrendCharts({
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white rounded-lg p-2 shadow-sm">
+      <div className="bg-white rounded-lg p-2 shadow-sm" style={{ position: "relative" }}>
         <h4 className="text-xs font-medium mb-1 text-gray-700">
           {selectedSegmentId !== null ? "Status Changes" : "Status Changes - All Segments"}
         </h4>
-        <ResponsiveContainer width="100%" height={120}>
+        <ResponsiveContainer width="100%" height={120} style={{ position: "relative" }}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="time" tick={{ fontSize: 10 }} />
@@ -236,6 +223,18 @@ export default function TrendCharts({
               }}
             />
             <Tooltip
+              // contentStyle={{
+              //   zIndex: 9999,
+              //   opacity: 1,
+              //   backgroundColor: "rgba(255, 255, 255, 1)",
+              //   border: "1px solid #ccc",
+              //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              //   pointerEvents: "auto",
+              // }}
+              wrapperStyle={{
+                zIndex: 2,
+                pointerEvents: "none",
+              }}
               formatter={(value: number) => {
                 const statuses = ["OK", "LOWLIGHT", "WARNING"];
                 return statuses[value] || "";
