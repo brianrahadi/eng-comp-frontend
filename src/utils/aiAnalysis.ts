@@ -14,6 +14,7 @@ import {
 } from './criticalitySystem';
 
 const GEMINI_API_KEY = "AIzaSyAyTiMjfhOKa5VQ-6omRm5-WAW-NsSYEBM";
+
 /**
  * Generate AI-powered insights for critical areas using Gemini API (INVERTED AWARE)
  */
@@ -93,19 +94,22 @@ Format your response as a professional report with clear sections and actionable
 `;
 
   try {
-    const response = await fetch(GEMINI_API_KEY, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
           }]
-        }]
-      })
-    });
+        })
+      }
+    );
     
     if (!response.ok) {
       throw new Error(`Gemini API request failed: ${response.status}`);
@@ -226,19 +230,22 @@ Be concise and specific.
 `;
 
   try {
-    const response = await fetch(GEMINI_API_KEY, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
           }]
-        }]
-      })
-    });
+        })
+      }
+    );
     
     if (!response.ok) {
       throw new Error(`Gemini API request failed: ${response.status}`);

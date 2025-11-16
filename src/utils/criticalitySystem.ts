@@ -190,8 +190,12 @@ export function getSeverityIcon(level: SeverityLevel): string {
 /**
  * Calculate system health percentage (INVERTED AWARE)
  * Higher percentage = better system health
+ * 
+ * FIXED: TypeScript error with reduce - explicitly type accumulator as number
  */
 export function calculateSystemHealth(cameras: Camera[]): number {
+  if (!cameras || cameras.length === 0) return 0;
+  
   const analyzed = analyzeCamerasWithSeverity(cameras);
   
   // Weight: Level 5 = 100%, Level 4 = 75%, Level 3 = 50%, Level 2 = 25%, Level 1 = 0%
@@ -203,7 +207,8 @@ export function calculateSystemHealth(cameras: Camera[]): number {
     1: 0
   };
   
-  const totalScore = analyzed.reduce((sum, cam) => sum + weights[cam.severity.level], 0);
+  // FIXED: Add <number> generic to reduce to explicitly type the accumulator
+  const totalScore = analyzed.reduce<number>((sum, cam) => sum + weights[cam.severity.level], 0);
   const maxScore = cameras.length * 100;
   
   return (totalScore / maxScore) * 100;

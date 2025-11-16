@@ -30,19 +30,40 @@ export interface CameraWithSeverity extends Camera {
 }
 
 export interface FilterOptions {
+  // Basic filters
   status?: CameraStatus | 'ALL';
   waterMin?: number;
   waterMax?: number;
   lightMin?: number;
   lightMax?: number;
+  
+  // Severity filters (INVERTED AWARE)
   severityLevel?: SeverityLevel;
   maxSeverity?: SeverityLevel; // Show cameras at or below this level (worse conditions)
   minSeverity?: SeverityLevel; // Show cameras at or above this level (better conditions)
+  
+  // Search
   searchId?: string;
+  
+  // Description keyword filtering
+  descriptionKeywords?: string[]; // Custom keywords to search for
+  hasUrgencyKeywords?: boolean;   // urgent, emergency, immediate, critical
+  hasObstructionKeywords?: boolean; // blockage, clog, debris
+  hasStructuralKeywords?: boolean;  // crack, collapse, root intrusion
+  hasBuildupKeywords?: boolean;     // grease, sediment, scale
+  hasFlowKeywords?: boolean;        // slow drain, standing water
+  hasBioKeywords?: boolean;         // odor, biofilm, slime
+  
+  // Advanced filters
+  abnormalWater?: boolean;      // Water > 0.7
+  multiFactor?: boolean;        // Level 3+ AND (WARNING OR water > 0.6)
+  unreliableSensors?: boolean;  // LOWLIGHT or WARNING
+  highRisk?: boolean;           // Risk score > 70
 }
 
 export interface FilterPreset {
   name: string;
+  description?: string;
   filters: FilterOptions;
 }
 
