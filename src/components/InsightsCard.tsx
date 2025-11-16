@@ -1,4 +1,5 @@
 import type { Camera } from "../api/types";
+import { calculateCriticality, getCriticalityLabel, getCriticalityColor } from "../utils/criticality";
 
 interface InsightsCardProps {
   cameras: Camera[];
@@ -21,8 +22,27 @@ export default function InsightsCard({ cameras, selectedSegmentId }: InsightsCar
       : cameras;
 
     filteredCameras.forEach((camera) => {
+      const criticality = calculateCriticality(camera.CameraLight ?? 3, camera.Water, camera.Status);
       const critical: Insight[] = [];
       const general: Insight[] = [];
+
+      if (criticality.criticalityLevel <= 2) {
+        critical.push({
+          type: "critical",
+          segmentId: camera.SegmentID,
+          title: `Criticality Level ${criticality.criticalityLevel} - ${getCriticalityLabel(criticality.criticalityLevel)}`,
+          message: `Final Light Severity: ${criticality.finalLightSeverity.toFixed(3)}. Raw: ${criticality.rawLightValue.toFixed(2)}, Status Factor: ${criticality.statusFactor}, WIF: ${criticality.waterImpactFactor.toFixed(2)}${criticality.overrideTriggered ? ` (Override: ${criticality.overrideReason})` : ""}`,
+          severity: criticality.criticalityLevel === 1 ? "error" : "warning",
+        });
+      } else if (selectedSegmentId !== null) {
+        general.push({
+          type: "general",
+          segmentId: camera.SegmentID,
+          title: `Criticality Level ${criticality.criticalityLevel} - ${getCriticalityLabel(criticality.criticalityLevel)}`,
+          message: `Final Light Severity: ${criticality.finalLightSeverity.toFixed(3)}. Operating normally.`,
+          severity: "ok",
+        });
+      }
 
       if (camera.Water > 0.8) {
         critical.push({

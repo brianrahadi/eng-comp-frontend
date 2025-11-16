@@ -1,4 +1,5 @@
 import type { Camera } from "../api/types";
+import { calculateCriticality, getCriticalityLabel, getCriticalityColor } from "../utils/criticality";
 
 function getStatusBadgeColor(status: Camera["Status"]): string {
   if (status === "WARNING") return "bg-[#7F1D1D] text-[#EF4444]";
@@ -13,32 +14,50 @@ export default function CameraTable({ cameras }: { cameras: Camera[] }) {
         <thead>
           <tr className="bg-[#334155] border-b border-[#475569]">
             <th className="p-3 text-left font-semibold text-[#F8FAFC]">Segment ID</th>
+            <th className="p-3 text-left font-semibold text-[#F8FAFC]">Criticality</th>
             <th className="p-3 text-left font-semibold text-[#F8FAFC]">Water %</th>
             <th className="p-3 text-left font-semibold text-[#F8FAFC]">Light</th>
+            <th className="p-3 text-left font-semibold text-[#F8FAFC]">CameraLight</th>
             <th className="p-3 text-left font-semibold text-[#F8FAFC]">Status</th>
             <th className="p-3 text-left font-semibold text-[#F8FAFC]">Position (X, Y)</th>
           </tr>
         </thead>
         <tbody>
-          {cameras.map((c) => (
-            <tr key={c.SegmentID} className="border-b border-[#334155] hover:bg-[#334155]">
-              <td className="p-3 font-medium text-[#F8FAFC]">{c.SegmentID}</td>
-              <td className="p-3 text-[#CBD5E1]">{(c.Water * 100).toFixed(1)}%</td>
-              <td className="p-3 text-[#CBD5E1]">{c.Light.toFixed(2)}</td>
-              <td className="p-3">
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(
-                    c.Status
-                  )}`}
-                >
-                  {c.Status}
-                </span>
-              </td>
-              <td className="p-3 font-mono text-xs text-[#94A3B8]">
-                [{c.Position[0].toFixed(2)}, {c.Position[1].toFixed(2)}]
-              </td>
-            </tr>
-          ))}
+          {cameras.map((c) => {
+            const criticality = calculateCriticality(c.CameraLight ?? 3, c.Water, c.Status);
+            return (
+              <tr key={c.SegmentID} className="border-b border-[#334155] hover:bg-[#334155]">
+                <td className="p-3 font-medium text-[#F8FAFC]">{c.SegmentID}</td>
+                <td className="p-3">
+                  <span
+                    className="px-2 py-1 rounded-full text-xs font-medium"
+                    style={{
+                      backgroundColor: `${getCriticalityColor(criticality.criticalityLevel)}20`,
+                      color: getCriticalityColor(criticality.criticalityLevel),
+                      border: `1px solid ${getCriticalityColor(criticality.criticalityLevel)}`,
+                    }}
+                  >
+                    Level {criticality.criticalityLevel} - {getCriticalityLabel(criticality.criticalityLevel)}
+                  </span>
+                </td>
+                <td className="p-3 text-[#CBD5E1]">{(c.Water * 100).toFixed(1)}%</td>
+                <td className="p-3 text-[#CBD5E1]">{c.Light.toFixed(2)}</td>
+                <td className="p-3 text-[#CBD5E1]">{c.CameraLight ?? 3}</td>
+                <td className="p-3">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(
+                      c.Status
+                    )}`}
+                  >
+                    {c.Status}
+                  </span>
+                </td>
+                <td className="p-3 font-mono text-xs text-[#94A3B8]">
+                  [{c.Position[0].toFixed(2)}, {c.Position[1].toFixed(2)}]
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

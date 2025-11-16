@@ -11,14 +11,9 @@ import "reactflow/dist/style.css";
 import type { Camera } from "../api/types";
 import CameraTooltip from "./CameraTooltip";
 import { getSegmentColor } from "../utils/colors";
+import { calculateCriticality, getCriticalityColor } from "../utils/criticality";
 
 const SCALE_FACTOR = 200;
-
-function getStatusBorderColor(status: Camera["Status"]): string {
-  if (status === "WARNING") return "#7F1D1D";
-  if (status === "LOWLIGHT") return "#B45309";
-  return "#065F46";
-}
 
 interface MapViewProps {
   cameras: Camera[];
@@ -206,8 +201,8 @@ export default function MapView({
           justifyContent: "center",
           border: selectedSegmentId === c.SegmentID 
             ? "4px solid #38BDF8" 
-            : `3px solid ${getStatusBorderColor(c.Status)}`,
-          color: c.Status === "WARNING" ? "#fff" : "#000",
+            : `3px solid ${getCriticalityColor(calculateCriticality(c.CameraLight ?? 3, c.Water, c.Status).criticalityLevel)}`,
+          color: calculateCriticality(c.CameraLight ?? 3, c.Water, c.Status).criticalityLevel <= 2 ? "#fff" : "#000",
           fontWeight: "600",
           fontSize: "14px",
           transition: isPlaybackMode ? "background 0.3s ease, border 0.3s ease" : "none",
