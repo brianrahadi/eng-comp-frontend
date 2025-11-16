@@ -36,6 +36,17 @@ export default function TrendCharts({
   const [clickedSegmentId, setClickedSegmentId] = useState<number | null>(null);
 
   const activeSegmentId = clickedSegmentId ?? hoveredSegmentId;
+
+  const formatWaterTooltip = (value: number) => {
+    if (value === null || value === undefined) return value;
+    return `${Number(value).toFixed(2)}%`;
+  };
+
+  const formatLightTooltip = (value: number) => {
+    if (value === null || value === undefined) return value;
+    return Number(value).toFixed(2);
+  };
+
   const { chartData, segmentIds } = useMemo(() => {
     if (history.length === 0) return { chartData: [], segmentIds: [] };
 
@@ -137,7 +148,9 @@ export default function TrendCharts({
             <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
             <XAxis dataKey="time" tick={{ fontSize: 10, fill: "#94A3B8" }} stroke="#64748B" />
             <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#94A3B8" }} width={40} stroke="#64748B" />
-            <Tooltip />
+            <Tooltip
+              formatter={(value: number) => formatWaterTooltip(value)}
+            />
             <Legend wrapperStyle={{ fontSize: "10px", color: "#F8FAFC" }} />
             {selectedSegmentId !== null ? (
               <Line
@@ -193,7 +206,9 @@ export default function TrendCharts({
             <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
             <XAxis dataKey="time" tick={{ fontSize: 10, fill: "#94A3B8" }} stroke="#64748B" />
             <YAxis tick={{ fontSize: 10, fill: "#94A3B8" }} width={40} stroke="#64748B" />
-            <Tooltip />
+            <Tooltip
+              formatter={(value: number) => formatLightTooltip(value)}
+            />
             <Legend wrapperStyle={{ fontSize: "10px", color: "#F8FAFC" }} />
             {selectedSegmentId !== null ? (
               <Line
