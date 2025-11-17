@@ -194,17 +194,17 @@ export default function MapView({
         style: {
           background: getSegmentColor(c.SegmentID),
           borderRadius: "50%",
-          width: "60px",
-          height: "60px",
+          width: "80px",
+          height: "80px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           border: selectedSegmentId === c.SegmentID 
-            ? "4px solid #38BDF8" 
-            : `3px solid ${getCriticalityColor(calculateCriticality(c.CameraLight ?? 3, c.Water, c.Status).criticalityLevel)}`,
+            ? "5px solid #38BDF8" 
+            : `4px solid ${getCriticalityColor(calculateCriticality(c.CameraLight ?? 3, c.Water, c.Status).criticalityLevel)}`,
           color: calculateCriticality(c.CameraLight ?? 3, c.Water, c.Status).criticalityLevel <= 2 ? "#fff" : "#000",
           fontWeight: "600",
-          fontSize: "14px",
+          fontSize: "16px",
           transition: isPlaybackMode ? "background 0.3s ease, border 0.3s ease" : "none",
         },
       })),
