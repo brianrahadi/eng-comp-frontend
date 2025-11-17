@@ -1,22 +1,60 @@
-# Sewer Camera Monitoring System
+# PipeWatch - Sewer Camera Monitoring System
 
-A React + TypeScript application for monitoring sewer pipe camera systems in real-time. This application visualizes camera data on an interactive map, provides insights dashboard, and displays detailed camera information.
+![Landing Page](public/landing.png)
+![Landing Page 2](public/landing2.png)
+![Landing Page 3](public/landing3.png)
+
+A comprehensive React + TypeScript application for real-time monitoring of sewer pipe camera systems. This application provides interactive map visualization, trend analysis, AI-powered insights, and detailed reporting capabilities.
 
 ## Features
 
-- **Interactive Map Visualization**: View all cameras on a coordinate-based map using React Flow
-- **Real-time Updates**: WebSocket integration for live camera data updates
-- **Insights Dashboard**: Overview of system health metrics
-- **Detailed Camera Table**: Comprehensive view of all camera data
-- **Tooltips**: Hover over camera nodes to see detailed information
+### Core Functionality
+- **Interactive Map Visualization**: Coordinate-based map using React Flow with circular segment nodes
+- **Real-time Updates**: WebSocket integration for live camera data updates (every 6 seconds)
+- **Historical Data Playback**: Timeline slider to scrub through the last 60 seconds of sensor history
+- **Trend Charts**: Time-series visualization for water levels, light levels, and status changes using Recharts
+- **Segment Selection**: Multiple ways to select segments (map click, hover, or circular buttons)
+
+### Analytics & Insights
+- **AI Insights & Analytics Panel**: Floating sidebar with AI-generated analysis, critical areas, and average values
+- **Criticality System**: Sensor-weighted criticality calculation based on Light, Water, and Status
+- **Insights Dashboard**: Overview of system health metrics with severity-based insights
+- **Detailed Camera Table**: Sortable table with comprehensive camera data
+
+### Data Export & Reporting
+- **PDF Report Generation**: Comprehensive inspection reports with AI-generated summaries, critical areas table, and dashboard screenshots
+- **CSV/JSON Export**: Export last 1 minute of historical data
+- **Full-page Screenshots**: Capture entire dashboard for documentation
+
+### User Interface
+- **Dark Mode Theme**: Professional engineering monitoring theme with high contrast colors
+- **Tab-based Layout**: Switch between Map, Charts, or Both views
+- **Segment Filter Buttons**: Quick selection buttons in the tab bar
+- **Hover Tooltips**: Detailed segment information on map hover
+- **Responsive Design**: Works on desktop and tablet devices
 
 ## Tech Stack
 
-- **Frontend**: React 19 + TypeScript + Vite
-- **State Management**: TanStack Query (React Query)
-- **Visualization**: React Flow
-- **Styling**: Tailwind CSS
-- **Backend**: Express.js + WebSocket (mock server)
+**Frontend:**
+- React 19 + TypeScript
+- Vite (build tool with SWC)
+- Tailwind CSS v4 (styling)
+- React Flow (map/node visualization)
+- Recharts (time-series charts)
+- TanStack Query (data fetching and caching)
+- Axios (HTTP client)
+- html2canvas-pro + jsPDF (PDF report generation)
+
+**Backend:**
+- Express.js (REST API)
+- WebSocket (ws) (real-time updates)
+- TypeScript (type-safe server code)
+- tsx (TypeScript execution)
+
+**Development:**
+- ESLint (code linting)
+- Nodemon (auto-restart for server)
+- PostCSS (CSS processing)
 
 ## Getting Started
 
@@ -55,25 +93,36 @@ The application will be available at:
 
 ```
 src/
-├── api/              # API service layer
-│   ├── types.ts      # TypeScript interfaces
-│   └── cameraService.ts  # REST API client
-├── components/       # React components
-│   ├── MapView.tsx   # Main map visualization
-│   ├── CameraTooltip.tsx  # Tooltip component
-│   ├── Dashboard.tsx # Insights dashboard
-│   └── CameraTable.tsx    # Data table
-├── hooks/            # Custom React hooks
-│   ├── useCameraData.ts   # Camera data fetching
-│   └── useWebSocket.ts    # WebSocket connection
-├── pages/            # Page components
-│   └── DashboardPage.tsx  # Main dashboard page
-└── utils/            # Utility functions
-    └── insights.ts   # Insight calculations
+├── api/                    # API service layer
+│   ├── types.ts            # TypeScript interfaces
+│   └── cameraService.ts     # REST API client
+├── components/             # React components
+│   ├── MapView.tsx         # Main map visualization
+│   ├── CameraTooltip.tsx   # Tooltip component
+│   ├── Dashboard.tsx       # Insights dashboard
+│   ├── CameraTable.tsx     # Sortable data table
+│   ├── TrendCharts.tsx     # Time-series charts
+│   ├── PlaybackControls.tsx # Timeline playback controls
+│   ├── MapAndChartsLayout.tsx # Tab-based layout
+│   ├── Header.tsx          # Application header with exports
+│   ├── InsightsCard.tsx     # Segment insights display
+│   ├── InsightsPanel.tsx    # Floating AI insights sidebar
+│   └── InsightsPanelInline.tsx # Inline insights for PDF
+├── hooks/                  # Custom React hooks
+│   ├── useCameraData.ts    # Camera data fetching
+│   ├── useWebSocket.ts     # WebSocket connection
+│   ├── useHistoricalData.ts # Historical data management
+│   └── useScreenshot.ts    # PDF report generation
+├── pages/                  # Page components
+│   └── DashboardPage.tsx   # Main dashboard page
+└── utils/                  # Utility functions
+    ├── insights.ts          # Insight calculations
+    ├── criticality.ts      # Criticality system
+    └── colors.ts           # Segment color mapping
 
 server/
-├── server.ts         # Express + WebSocket server
-└── seed.json         # Sample camera data
+├── server.ts               # Express + WebSocket server
+└── seed.json               # Sample camera data
 ```
 
 ## Camera Data Structure
@@ -82,7 +131,7 @@ Each camera entry contains:
 - `Position`: [X, Y] coordinates relative to starting point (0,0)
 - `SegmentID`: Unique identifier for the camera
 - `Water`: Water submersion percentage (0-1)
-- `Light`: Light level (0-255 scale, normalized)
+- `Light`: Light level (1-5 scale, where 5 is brightest)
 - `Status`: Camera status (OK, LOWLIGHT, WARNING)
 - `ViewDescription`: Optional descriptive text
 
@@ -96,8 +145,56 @@ Each camera entry contains:
 ## Status Indicators
 
 - **OK** (Green): Normal operation
-- **LOWLIGHT** (Yellow): Insufficient lighting detected
-- **WARNING** (Red): High water level or critical issue
+- **LOWLIGHT** (Yellow): Insufficient lighting detected (Light ≤ 2)
+- **WARNING** (Red): High water level (>0.8) or critical issue
+
+## Criticality Levels
+
+The system calculates criticality (1-5) based on:
+- Light level (1-5 scale)
+- Water submersion percentage
+- Camera status
+- Override conditions (high water, warning status, etc.)
+
+Levels:
+- **Level 1 - Critical**: Immediate attention required
+- **Level 2 - Severe**: High priority
+- **Level 3 - Moderate**: Monitor closely
+- **Level 4 - Minor**: Low priority
+- **Level 5 - Safe**: Normal operation
+
+## API Endpoints
+
+### REST API
+- `GET /api/cameras` - Get current camera data
+- `GET /api/history` - Get historical data (last 60 seconds)
+- `GET /api/export/csv` - Export data as CSV
+- `GET /api/export/json` - Export data as JSON
+- `GET /api/insights` - Get AI insights and analytics
+
+### WebSocket
+- Real-time camera updates every 6 seconds
+- Historical data stored for last 60 seconds
+
+## Usage
+
+### Selecting Segments
+- **Map Click**: Click on a segment node to select/deselect
+- **Map Hover**: Hover over a segment to temporarily select it
+- **Segment Buttons**: Use circular buttons in the tab bar (Both tab only)
+
+### Viewing Trends
+- Select a segment to view its individual trends
+- Deselect to view aggregated trends for all segments
+- Use playback controls to scrub through historical data
+
+### Generating Reports
+- Click "PDF Report" in the header to generate a comprehensive inspection report
+- Report includes AI-generated summary, critical areas table, insights, and dashboard screenshot
+
+### Exporting Data
+- Click "CSV" or "JSON" buttons to export the last 1 minute of data
+- Data includes all segments with timestamps
 
 ## Development
 
@@ -113,14 +210,18 @@ npm run build
 npm run preview
 ```
 
-## Future Improvements
+## Key Features Implemented
 
-- Historical data playback with time slider
-- Alert thresholds configuration
-- Auto-layout connections between segments
-- Export insights to CSV
-- Multi-camera comparison panel
-- Authentication and user management
+✅ Historical data playback with timeline slider  
+✅ Trend charts for water, light, and status  
+✅ AI-powered insights and analytics  
+✅ PDF report generation with AI summaries  
+✅ CSV/JSON data export  
+✅ Criticality-based risk assessment  
+✅ Dark mode safety monitoring theme  
+✅ Segment selection via multiple methods  
+✅ Real-time WebSocket updates  
+✅ Sortable camera data table  
 
 ## Competition Notes
 
@@ -131,3 +232,6 @@ This application is designed for the Engineering Competition 2025 Programming Ca
 - Consumer-friendly interface
 - REST API and WebSocket integration
 - Responsive design with modern UI
+- AI-powered analytics and insights
+- Comprehensive reporting capabilities
+- Professional monitoring dashboard design
