@@ -1,10 +1,49 @@
 import html2canvas from "html2canvas";
+import axios from "axios";
 
 interface HeaderProps {
   pageRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export default function Header({ pageRef }: HeaderProps) {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
+  const handleExportCSV = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/export/csv`, {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `pipewatch-export-${new Date().toISOString().split("T")[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Failed to export CSV:", error);
+      alert("Failed to export CSV. Please try again.");
+    }
+  };
+
+  const handleExportJSON = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/export/json`, {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `pipewatch-export-${new Date().toISOString().split("T")[0]}.json`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Failed to export JSON:", error);
+      alert("Failed to export JSON. Please try again.");
+    }
+  };
+
   const handleGenerateReport = async () => {
     const element = pageRef.current || document.getElementById("root");
     if (!element) return;
@@ -46,24 +85,46 @@ export default function Header({ pageRef }: HeaderProps) {
             Real-time monitoring of sewer pipe camera system status
           </span>
         </div>
-        <button
-          onClick={handleGenerateReport}
-          className="px-4 py-2 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-lg font-medium transition-colors flex items-center gap-2"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportCSV}
+            className="px-3 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
+            title="Export last 1 minute of data as CSV"
           >
-            <path
-              fillRule="evenodd"
-              d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Generate Report
-        </button>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+            CSV
+          </button>
+          <button
+            onClick={handleExportJSON}
+            className="px-3 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
+            title="Export last 1 minute of data as JSON"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+            JSON
+          </button>
+          <button
+            onClick={handleGenerateReport}
+            className="px-4 py-2 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Screenshot
+          </button>
+        </div>
       </div>
     </header>
   );
