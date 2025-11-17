@@ -195,7 +195,7 @@ export default function InsightsCard({ cameras, selectedSegmentId }: InsightsCar
                 {insight.title}
               </h4>
               {selectedSegmentId === null && (
-                <span className="text-xs text-[#94A3B8] ml-2">Seg {insight.segmentId}</span>
+                <span className="text-[#94A3B8] ml-2">Seg {insight.segmentId}</span>
               )}
             </div>
             <p className="text-sm text-[#CBD5E1]">{insight.message}</p>

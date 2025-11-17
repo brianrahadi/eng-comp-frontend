@@ -239,9 +239,17 @@ export default function MapView({
           const id = Number(node.id);
           if (!isNaN(id)) {
             setHoverId(id);
+            if (onSegmentSelect) {
+              onSegmentSelect(id);
+            }
           }
         }}
-        onNodeMouseLeave={() => setHoverId(null)}
+        onNodeMouseLeave={() => {
+          setHoverId(null);
+          if (onSegmentSelect) {
+            onSegmentSelect(null);
+          }
+        }}
         onNodeClick={(_, node) => {
           const id = Number(node.id);
           if (!isNaN(id) && onSegmentSelect) {
