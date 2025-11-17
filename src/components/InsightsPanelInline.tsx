@@ -73,42 +73,44 @@ export default function InsightsPanelInline() {
         </div>
       </div>
 
-      {criticalAreas.length > 0 && (
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold text-[#F8FAFC] mb-2">Critical Areas (Last Minute)</h3>
-          <div className="max-h-40 overflow-y-auto space-y-2">
-            {criticalAreas.slice(-5).map((area, idx) => (
-              <div key={idx} className="bg-[#7F1D1D]/20 border border-[#EF4444] rounded p-2 text-xs">
-                <div className="text-[#EF4444] font-semibold">
-                  {new Date(area.timestamp).toLocaleTimeString()} - {area.count} critical segment(s)
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {criticalAreas.length > 0 && (
+          <div>
+            <h3 className="text-sm font-semibold text-[#F8FAFC] mb-2">Critical Areas (Last Minute)</h3>
+            <div className="space-y-2">
+              {criticalAreas.map((area, idx) => (
+                <div key={idx} className="bg-[#7F1D1D]/20 border border-[#EF4444] rounded p-2 text-xs">
+                  <div className="text-[#EF4444] font-semibold">
+                    {new Date(area.timestamp).toLocaleTimeString()} - {area.count} critical segment(s)
+                  </div>
+                  <div className="text-[#CBD5E1] mt-1">
+                    Segments: {area.segments.map((s: any) => s.segmentId).join(", ")}
+                  </div>
                 </div>
-                <div className="text-[#CBD5E1] mt-1">
-                  Segments: {area.segments.map((s: any) => s.segmentId).join(", ")}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {averages.length > 0 && (
-        <div>
-          <h3 className="text-sm font-semibold text-[#F8FAFC] mb-2">Average Values (Last Minute)</h3>
-          <div className="max-h-40 overflow-y-auto space-y-1">
-            {averages.slice(-5).map((avg, idx) => (
-              <div key={idx} className="bg-[#334155] rounded p-2 text-xs border border-[#475569]">
-                <div className="text-[#F8FAFC] font-medium">
-                  {new Date(avg.timestamp).toLocaleTimeString()}
+        {averages.length > 0 && (
+          <div>
+            <h3 className="text-sm font-semibold text-[#F8FAFC] mb-2">Average Values (Last Minute)</h3>
+            <div className="space-y-1">
+              {averages.map((avg, idx) => (
+                <div key={idx} className="bg-[#334155] rounded p-2 text-xs border border-[#475569]">
+                  <div className="text-[#F8FAFC] font-medium">
+                    {new Date(avg.timestamp).toLocaleTimeString()}
+                  </div>
+                  <div className="text-[#CBD5E1] mt-1">
+                    Water: {(parseFloat(avg.avgWater) * 100).toFixed(1)}% | 
+                    Light: {parseFloat(avg.avgLight).toFixed(1)}/5
+                  </div>
                 </div>
-                <div className="text-[#CBD5E1] mt-1">
-                  Water: {(parseFloat(avg.avgWater) * 100).toFixed(1)}% | 
-                  Light: {parseFloat(avg.avgLight).toFixed(1)}/5
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

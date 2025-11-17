@@ -109,8 +109,8 @@ export default function InsightsPanel({ isOpen, onClose }: InsightsPanelProps) {
       {criticalAreas.length > 0 && (
         <div className="mb-4">
           <h3 className="text-sm font-semibold text-[#F8FAFC] mb-2">Critical Areas (Last Minute)</h3>
-          <div className="max-h-40 overflow-y-auto space-y-2">
-            {criticalAreas.slice(-5).map((area, idx) => (
+          <div className="space-y-2">
+            {criticalAreas.map((area, idx) => (
               <div key={idx} className="bg-[#7F1D1D]/20 border border-[#EF4444] rounded p-2 text-xs">
                 <div className="text-[#EF4444] font-semibold">
                   {new Date(area.timestamp).toLocaleTimeString()} - {area.count} critical segment(s)
@@ -127,8 +127,8 @@ export default function InsightsPanel({ isOpen, onClose }: InsightsPanelProps) {
       {averages.length > 0 && (
         <div>
           <h3 className="text-sm font-semibold text-[#F8FAFC] mb-2">Average Values (Last Minute)</h3>
-          <div className="max-h-40 overflow-y-auto space-y-1">
-            {averages.slice(-5).map((avg, idx) => (
+          <div className="space-y-1">
+            {averages.map((avg, idx) => (
               <div key={idx} className="bg-[#334155] rounded p-2 text-xs border border-[#475569]">
                 <div className="text-[#F8FAFC] font-medium">
                   {new Date(avg.timestamp).toLocaleTimeString()}
