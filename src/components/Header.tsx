@@ -79,7 +79,7 @@ export default function Header({ pageRef, onCaptureStart, onCaptureEnd, cameras 
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold text-[#F8FAFC]">PipeWatch</h1>
-          <span className="text-sm text-[#94A3B8] hidden sm:inline">
+          <span className="text-sm text-[#94A3B8] hidden sm:inline mt-3">
             Real-time monitoring of sewer pipe camera system status
           </span>
         </div>
