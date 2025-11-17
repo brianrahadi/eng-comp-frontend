@@ -1,5 +1,5 @@
 import type { Camera } from "../api/types";
-import { calculateCriticality, getCriticalityLabel, getCriticalityColor } from "../utils/criticality";
+import { calculateCriticality, getCriticalityLabel } from "../utils/criticality";
 
 interface InsightsCardProps {
   cameras: Camera[];
@@ -117,7 +117,21 @@ export default function InsightsCard({ cameras, selectedSegmentId }: InsightsCar
       }
     });
 
-    return insights;
+    const severityOrder: Record<string, number> = {
+      error: 1,
+      warning: 2,
+      info: 3,
+      ok: 4,
+    };
+
+    return insights.sort((a, b) => {
+      const orderA = severityOrder[a.severity] ?? 5;
+      const orderB = severityOrder[b.severity] ?? 5;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return a.segmentId - b.segmentId;
+    });
   };
 
   const insights = getInsights();
