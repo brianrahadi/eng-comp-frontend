@@ -201,8 +201,8 @@ export default function MapView({
           justifyContent: "center",
           border: selectedSegmentId === c.SegmentID 
             ? "5px solid #38BDF8" 
-            : `4px solid ${getCriticalityColor(calculateCriticality(c.CameraLight ?? 3, c.Water, c.Status).criticalityLevel)}`,
-          color: calculateCriticality(c.CameraLight ?? 3, c.Water, c.Status).criticalityLevel <= 2 ? "#fff" : "#000",
+            : `4px solid ${getCriticalityColor(calculateCriticality(c.Light ?? 3, c.Water, c.Status).criticalityLevel)}`,
+          color: calculateCriticality(c.Light ?? 3, c.Water, c.Status).criticalityLevel <= 2 ? "#fff" : "#000",
           fontWeight: "600",
           fontSize: "16px",
           transition: isPlaybackMode ? "background 0.3s ease, border 0.3s ease" : "none",

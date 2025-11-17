@@ -5,7 +5,6 @@ export interface Camera {
   SegmentID: number;
   Water: number;
   Light: number;
-  CameraLight: number;
   Status: Status;
   ViewDescription?: string;
 }

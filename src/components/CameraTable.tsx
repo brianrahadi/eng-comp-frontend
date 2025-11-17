@@ -8,7 +8,7 @@ function getStatusBadgeColor(status: Camera["Status"]): string {
   return "bg-[#065F46] text-[#10B981]";
 }
 
-type SortColumn = "SegmentID" | "Criticality" | "Water" | "Light" | "CameraLight" | "Status" | "Position" | null;
+type SortColumn = "SegmentID" | "Criticality" | "Water" | "Light" | "Status" | "Position" | null;
 type SortDirection = "asc" | "desc" | null;
 
 export default function CameraTable({ cameras }: { cameras: Camera[] }) {
@@ -42,8 +42,8 @@ export default function CameraTable({ cameras }: { cameras: Camera[] }) {
           comparison = a.SegmentID - b.SegmentID;
           break;
         case "Criticality": {
-          const critA = calculateCriticality(a.CameraLight ?? 3, a.Water, a.Status);
-          const critB = calculateCriticality(b.CameraLight ?? 3, b.Water, b.Status);
+          const critA = calculateCriticality(a.Light ?? 3, a.Water, a.Status);
+          const critB = calculateCriticality(b.Light ?? 3, b.Water, b.Status);
           comparison = critA.criticalityLevel - critB.criticalityLevel;
           break;
         }
@@ -51,10 +51,7 @@ export default function CameraTable({ cameras }: { cameras: Camera[] }) {
           comparison = a.Water - b.Water;
           break;
         case "Light":
-          comparison = a.Light - b.Light;
-          break;
-        case "CameraLight":
-          comparison = (a.CameraLight ?? 3) - (b.CameraLight ?? 3);
+          comparison = (a.Light ?? 3) - (b.Light ?? 3);
           break;
         case "Status": {
           const statusOrder: Record<string, number> = { OK: 0, LOWLIGHT: 1, WARNING: 2 };
@@ -123,21 +120,8 @@ export default function CameraTable({ cameras }: { cameras: Camera[] }) {
               onClick={() => handleSort("Light")}
             >
               <div className="flex items-center gap-2">
-                Light
+                Light (1-5)
                 {sortColumn === "Light" && (
-                  <span className="text-xs">
-                    {sortDirection === "asc" ? "↑" : "↓"}
-                  </span>
-                )}
-              </div>
-            </th>
-            <th
-              className="p-3 text-left font-semibold text-[#F8FAFC] cursor-pointer hover:bg-[#475569] select-none"
-              onClick={() => handleSort("CameraLight")}
-            >
-              <div className="flex items-center gap-2">
-                CameraLight
-                {sortColumn === "CameraLight" && (
                   <span className="text-xs">
                     {sortDirection === "asc" ? "↑" : "↓"}
                   </span>
@@ -174,7 +158,7 @@ export default function CameraTable({ cameras }: { cameras: Camera[] }) {
         </thead>
         <tbody>
           {sortedCameras.map((c) => {
-            const criticality = calculateCriticality(c.CameraLight ?? 3, c.Water, c.Status);
+            const criticality = calculateCriticality(c.Light ?? 3, c.Water, c.Status);
             return (
               <tr key={c.SegmentID} className="border-b border-[#334155] hover:bg-[#334155]">
                 <td className="p-3 font-medium text-[#F8FAFC]">{c.SegmentID}</td>
@@ -191,8 +175,7 @@ export default function CameraTable({ cameras }: { cameras: Camera[] }) {
                   </span>
                 </td>
                 <td className="p-3 text-[#CBD5E1]">{(c.Water * 100).toFixed(1)}%</td>
-                <td className="p-3 text-[#CBD5E1]">{c.Light.toFixed(2)}</td>
-                <td className="p-3 text-[#CBD5E1]">{c.CameraLight ?? 3}</td>
+                <td className="p-3 text-[#CBD5E1]">{c.Light ?? 3}</td>
                 <td className="p-3">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(

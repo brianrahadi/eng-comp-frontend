@@ -6,12 +6,14 @@ import CameraTable from "../components/CameraTable";
 import Header from "../components/Header";
 import InsightsCard from "../components/InsightsCard";
 import InsightsPanel from "../components/InsightsPanel";
+import InsightsPanelInline from "../components/InsightsPanelInline";
 
 export default function DashboardPage() {
   const { data, isLoading, error } = useCameraData();
   const pageRef = useRef<HTMLDivElement>(null);
   const [selectedSegmentId, setSelectedSegmentId] = useState<number | null>(null);
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
 
   if (isLoading) {
     return (
@@ -33,7 +35,7 @@ export default function DashboardPage() {
 
   return (
     <div className="bg-[#0F172A] min-h-screen text-[#F8FAFC]">
-      <Header pageRef={pageRef} />
+      <Header pageRef={pageRef} onCaptureStart={() => setIsCapturing(true)} onCaptureEnd={() => setIsCapturing(false)} cameras={data} />
       <div ref={pageRef} className="py-1 px-6 space-y-6">
         <Dashboard cameras={data} />
 
@@ -65,6 +67,12 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {isCapturing && (
+          <div className="w-full">
+            <InsightsPanelInline />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -44,7 +44,7 @@ export default function TrendCharts({
 
   const formatLightTooltip = (value: number) => {
     if (value === null || value === undefined) return value;
-    return Number(value).toFixed(2);
+    return `${Number(value).toFixed(1)}/5`;
   };
 
   const { chartData, segmentIds } = useMemo(() => {

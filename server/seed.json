@@ -3,32 +3,28 @@
     "Position": [0.80601666867733, 0],
     "SegmentID": 0,
     "Water": 0,
-    "Light": 0.19398641081590726,
-    "CameraLight": 5,
+    "Light": 5,
     "Status": "OK"
   },
   {
     "Position": [1, 1.7909335289376132],
     "SegmentID": 1,
     "Water": 0,
-    "Light": 1.0378277999840635,
-    "CameraLight": 4,
+    "Light": 4,
     "Status": "LOWLIGHT"
   },
   {
     "Position": [2.627638086671508, 2],
     "SegmentID": 2,
     "Water": 0.4375,
-    "Light": 0.6600776406053994,
-    "CameraLight": 3,
+    "Light": 3,
     "Status": "OK"
   },
   {
     "Position": [3.5, 1.2],
     "SegmentID": 3,
     "Water": 0.75,
-    "Light": 0.45,
-    "CameraLight": 2,
+    "Light": 2,
     "Status": "WARNING",
     "ViewDescription": "High water level detected"
   },
@@ -36,16 +32,14 @@
     "Position": [4.2, 3.1],
     "SegmentID": 4,
     "Water": 0.15,
-    "Light": 0.85,
-    "CameraLight": 5,
+    "Light": 5,
     "Status": "OK"
   },
   {
     "Position": [5.1, 2.5],
     "SegmentID": 5,
     "Water": 0.3,
-    "Light": 0.25,
-    "CameraLight": 1,
+    "Light": 1,
     "Status": "LOWLIGHT",
     "ViewDescription": "Insufficient lighting"
   }

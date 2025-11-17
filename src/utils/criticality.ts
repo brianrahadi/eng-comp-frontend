@@ -10,7 +10,7 @@ export interface CriticalityResult {
   overrideReason?: string;
 }
 
-const CAMERA_LIGHT_MAP: Record<number, number> = {
+const LIGHT_MAP: Record<number, number> = {
   1: 1.30,
   2: 1.05,
   3: 0.75,
@@ -41,7 +41,7 @@ function getCriticalityLevel(finalLight: number): 1 | 2 | 3 | 4 | 5 {
 }
 
 function checkHardOverrides(
-  cameraLight: number,
+  light: number,
   water: number,
   status: string
 ): { overrideTriggered: boolean; reason?: string } {
@@ -51,24 +51,24 @@ function checkHardOverrides(
   if (status === "WARNING" && water > 0.40) {
     return { overrideTriggered: true, reason: "WARNING status with Water > 0.40" };
   }
-  if (cameraLight === 1) {
-    return { overrideTriggered: true, reason: "CameraLight = 1 (darkest)" };
+  if (light === 1) {
+    return { overrideTriggered: true, reason: "Light = 1 (darkest)" };
   }
   return { overrideTriggered: false };
 }
 
 export function calculateCriticality(
-  cameraLight: number,
+  light: number,
   water: number,
   status: string
 ): CriticalityResult {
-  const rawLightValue = CAMERA_LIGHT_MAP[cameraLight] ?? 0.75;
+  const rawLightValue = LIGHT_MAP[light] ?? 0.75;
   const statusFactor = STATUS_FACTOR[status] ?? 1.00;
   const adjustedLight = rawLightValue * statusFactor;
   const waterImpactFactor = getWaterImpactFactor(water);
   const finalLightSeverity = adjustedLight * waterImpactFactor;
 
-  const override = checkHardOverrides(cameraLight, water, status);
+  const override = checkHardOverrides(light, water, status);
   const criticalityLevel = override.overrideTriggered
     ? 1
     : getCriticalityLevel(finalLightSeverity);

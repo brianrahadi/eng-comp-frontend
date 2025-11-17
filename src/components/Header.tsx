@@ -1,12 +1,18 @@
-import html2canvas from "html2canvas";
 import axios from "axios";
+import { useScreenshot } from "../hooks/useScreenshot";
+
+import type { Camera } from "../api/types";
 
 interface HeaderProps {
   pageRef: React.RefObject<HTMLDivElement | null>;
+  onCaptureStart: () => void;
+  onCaptureEnd: () => void;
+  cameras: Camera[];
 }
 
-export default function Header({ pageRef }: HeaderProps) {
+export default function Header({ pageRef, onCaptureStart, onCaptureEnd, cameras }: HeaderProps) {
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  const { generatePDF } = useScreenshot();
 
   const handleExportCSV = async () => {
     try {
@@ -49,22 +55,14 @@ export default function Header({ pageRef }: HeaderProps) {
     if (!element) return;
 
     try {
-      const canvas = await html2canvas(element, {
-        backgroundColor: "#0F172A",
-        scale: 1,
-        useCORS: true,
-        logging: false,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
-      });
-
-      const link = document.createElement("a");
-      link.download = `pipewatch-report-${new Date().toISOString().split("T")[0]}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+      onCaptureStart();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await generatePDF(element, cameras);
     } catch (error) {
       console.error("Failed to generate report:", error);
       alert("Failed to generate report. Please try again.");
+    } finally {
+      onCaptureEnd();
     }
   };
 
@@ -122,7 +120,7 @@ export default function Header({ pageRef }: HeaderProps) {
                 clipRule="evenodd"
               />
             </svg>
-            Screenshot
+            PDF Report
           </button>
         </div>
       </div>

@@ -3,12 +3,7 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
-interface InsightsPanelProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export default function InsightsPanel({ isOpen, onClose }: InsightsPanelProps) {
+export default function InsightsPanelInline() {
   const [insights, setInsights] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [criticalAreas, setCriticalAreas] = useState<any[]>([]);
@@ -38,48 +33,20 @@ export default function InsightsPanel({ isOpen, onClose }: InsightsPanelProps) {
   }, []);
 
   return (
-    <>
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40"
-          onClick={onClose}
-        />
-      )}
-      <div
-        className={`fixed top-4 right-4 bottom-4 w-[500px] max-w-[90vw] z-50 shadow-2xl transition-transform duration-300 ease-in-out overflow-y-auto rounded-2xl ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-        style={{
-          backgroundColor: "rgba(30, 41, 59, 0.95)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(51, 65, 85, 0.5)",
-        }}
-      >
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-[#F8FAFC]">AI Insights & Analytics</h2>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={fetchInsights}
-                disabled={loading}
-                className="px-3 py-1.5 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded text-sm disabled:opacity-50"
-              >
-                {loading ? "Loading..." : "Refresh"}
-              </button>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-[#334155] rounded text-[#F8FAFC]"
-                title="Close"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          </div>
+    <div className="bg-[#1E293B] rounded-lg border border-[#334155] p-4 w-full">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold text-[#F8FAFC]">AI Insights & Analytics</h2>
+        <button
+          onClick={fetchInsights}
+          disabled={loading}
+          className="px-3 py-1.5 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded text-sm disabled:opacity-50"
+        >
+          {loading ? "Loading..." : "Refresh"}
+        </button>
+      </div>
 
       {summary && (
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="grid grid-cols-4 gap-3 mb-4">
           <div className="bg-[#334155] rounded p-3 border border-[#475569]">
             <div className="text-xs text-[#94A3B8]">Data Points</div>
             <div className="text-lg font-bold text-[#F8FAFC]">{summary.totalDataPoints}</div>
@@ -142,9 +109,7 @@ export default function InsightsPanel({ isOpen, onClose }: InsightsPanelProps) {
           </div>
         </div>
       )}
-        </div>
-      </div>
-    </>
+    </div>
   );
 }
 

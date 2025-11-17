@@ -45,14 +45,13 @@ app.get("/api/export/csv", (_req, res) => {
     return;
   }
 
-  const headers = ["Timestamp", "SegmentID", "Water", "Light", "CameraLight", "Status", "PositionX", "PositionY"];
+  const headers = ["Timestamp", "SegmentID", "Water", "Light", "Status", "PositionX", "PositionY"];
   const rows = filtered.flatMap(point => 
     point.cameras.map((cam: any) => [
       new Date(point.timestamp).toISOString(),
       cam.SegmentID,
       cam.Water,
-      cam.Light,
-      cam.CameraLight ?? 3,
+      cam.Light ?? 3,
       cam.Status,
       cam.Position[0],
       cam.Position[1],
@@ -96,26 +95,22 @@ app.get("/api/insights", (_req, res) => {
     const timestamp = new Date(point.timestamp).toISOString();
     
     const avgWater = point.cameras.reduce((sum: number, c: any) => sum + c.Water, 0) / point.cameras.length;
-    const avgLight = point.cameras.reduce((sum: number, c: any) => sum + c.Light, 0) / point.cameras.length;
-    const avgCameraLight = point.cameras.reduce((sum: number, c: any) => sum + (c.CameraLight ?? 3), 0) / point.cameras.length;
+    const avgLight = point.cameras.reduce((sum: number, c: any) => sum + (c.Light ?? 3), 0) / point.cameras.length;
     
     averages.push({
       timestamp,
       avgWater: avgWater.toFixed(3),
-      avgLight: avgLight.toFixed(3),
-      avgCameraLight: avgCameraLight.toFixed(2),
+      avgLight: avgLight.toFixed(2),
     });
 
     const critical = point.cameras.filter((c: any) => {
       const water = c.Water;
-      const light = c.Light;
-      const cameraLight = c.CameraLight ?? 3;
+      const light = c.Light ?? 3;
       const status = c.Status;
       
       return water >= 0.85 || 
              (status === "WARNING" && water > 0.40) || 
-             cameraLight === 1 ||
-             light < 0.3 ||
+             light === 1 ||
              status === "WARNING" ||
              status === "LOWLIGHT";
     });
@@ -127,8 +122,7 @@ app.get("/api/insights", (_req, res) => {
         segments: critical.map((c: any) => ({
           segmentId: c.SegmentID,
           water: c.Water,
-          light: c.Light,
-          cameraLight: c.CameraLight ?? 3,
+          light: c.Light ?? 3,
           status: c.Status,
         })),
       });
@@ -146,13 +140,13 @@ ${criticalAreas.length > 0 ? `Most critical time: ${criticalAreas.sort((a, b) =>
 
 AVERAGE VALUES: 
 - Average Water Level: ${(avgWaterOverall * 100).toFixed(2)}% across all segments
-- Average Light Level: ${avgLightOverall.toFixed(3)} across all segments
+- Average Light Level: ${avgLightOverall.toFixed(2)}/5 across all segments
 - Trend: ${avgWaterOverall > 0.7 ? "⚠️ High water levels detected" : avgWaterOverall < 0.3 ? "✅ Water levels normal" : "⚠️ Moderate water levels"}
-${avgLightOverall < 0.3 ? "⚠️ Low light conditions persist" : "✅ Light levels adequate"}
+${avgLightOverall < 2 ? "⚠️ Low light conditions persist" : "✅ Light levels adequate"}
 
 INTERPRETATION:
 ${avgWaterOverall > 0.8 ? "CRITICAL: System shows elevated water levels indicating potential flooding or blockage. Immediate inspection recommended." : ""}
-${avgLightOverall < 0.3 ? "WARNING: Insufficient lighting detected, which may indicate camera obstruction or system malfunction." : ""}
+${avgLightOverall < 2 ? "WARNING: Insufficient lighting detected, which may indicate camera obstruction or system malfunction." : ""}
 ${totalCritical > filtered.length * 0.5 ? "ALERT: More than 50% of time points show critical conditions. System health requires immediate attention." : totalCritical > 0 ? "CAUTION: Intermittent critical conditions detected. Monitor closely." : "STATUS: System operating within normal parameters."}`;
 
   res.json({
@@ -163,7 +157,7 @@ ${totalCritical > filtered.length * 0.5 ? "ALERT: More than 50% of time points s
       totalDataPoints: filtered.length,
       totalCriticalEvents: totalCritical,
       avgWaterOverall: avgWaterOverall.toFixed(3),
-      avgLightOverall: avgLightOverall.toFixed(3),
+      avgLightOverall: avgLightOverall.toFixed(2),
     },
   });
 });
@@ -184,21 +178,20 @@ setInterval(() => {
     const jitter = (min: number, max: number) =>
       Math.random() * (max - min) + min;
     const Water = Math.min(1, Math.max(0, c.Water + jitter(-0.02, 0.02)));
-    const Light = Math.max(0, Math.min(1, c.Light + jitter(-0.05, 0.05)));
     
-    let CameraLight = c.CameraLight ?? 3;
+    let Light = c.Light ?? 3;
     if (Math.random() < 0.1) {
-      CameraLight = Math.max(1, Math.min(5, CameraLight + (Math.random() < 0.5 ? -1 : 1)));
+      Light = Math.max(1, Math.min(5, Math.round(Light + (Math.random() < 0.5 ? -1 : 1))));
     }
     
     let Status = "OK";
-    if (Light < 0.3) {
+    if (Light <= 2) {
       Status = "LOWLIGHT";
     } else if (Water > 0.8) {
       Status = "WARNING";
     }
 
-    return { ...c, Water, Light, CameraLight, Status };
+    return { ...c, Water, Light, Status };
   });
 
   const now = Date.now();

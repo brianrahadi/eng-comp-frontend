@@ -22,7 +22,7 @@ export default function InsightsCard({ cameras, selectedSegmentId }: InsightsCar
       : cameras;
 
     filteredCameras.forEach((camera) => {
-      const criticality = calculateCriticality(camera.CameraLight ?? 3, camera.Water, camera.Status);
+      const criticality = calculateCriticality(camera.Light ?? 3, camera.Water, camera.Status);
       const critical: Insight[] = [];
       const general: Insight[] = [];
 
@@ -62,12 +62,12 @@ export default function InsightsCard({ cameras, selectedSegmentId }: InsightsCar
         });
       }
 
-      if (camera.Light < 0.3) {
+      if (camera.Light <= 2) {
         critical.push({
           type: "critical",
           segmentId: camera.SegmentID,
           title: "Low Light Level",
-          message: `Light level is ${camera.Light.toFixed(2)} - Below threshold`,
+          message: `Light level is ${camera.Light}/5 - Below threshold`,
           severity: "warning",
         });
       } else if (selectedSegmentId !== null) {
@@ -75,7 +75,7 @@ export default function InsightsCard({ cameras, selectedSegmentId }: InsightsCar
           type: "general",
           segmentId: camera.SegmentID,
           title: "Light Level Normal",
-          message: `Light level: ${camera.Light.toFixed(2)}`,
+          message: `Light level: ${camera.Light}/5`,
           severity: "ok",
         });
       }
