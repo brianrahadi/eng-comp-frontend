@@ -47,7 +47,7 @@ export function useScreenshot() {
         yPos = 20;
       }
       addText(text, 14, true, [0, 0, 0]);
-      yPos += 3;
+      yPos += 1;
     };
 
     try {
@@ -149,7 +149,7 @@ The system indicates that ${criticalSegments.length === 0 ? "all areas are opera
         yPos = 20;
       }
 
-      addSectionHeader("Observations / AI Insights");
+      addSectionHeader("Observation and Insights");
       const insightsText = insights.insights || "No insights available.";
       addText(insightsText, 10);
 
@@ -161,7 +161,7 @@ The system indicates that ${criticalSegments.length === 0 ? "all areas are opera
       addSectionHeader("Recommendations");
       const recommendations = [
         criticalSegments.length > 0 ? `• Prioritize inspection of Level 1 critical segments immediately. ${criticalSegments.filter(c => c.criticality.criticalityLevel === 1).length} segment(s) require urgent attention.` : "",
-        lowLightSegments.length > 0 ? `• Schedule regular monitoring for LOWLIGHT segments. ${lowLightSegments.length} segment(s) have insufficient lighting (Light ≤ 2).` : "",
+        lowLightSegments.length > 0 ? `• Schedule regular monitoring for LOWLIGHT segments. ${lowLightSegments.length} segment(s) have insufficient lighting (Light less than 2).` : "",
         highWaterSegments.length > 0 ? `• Address high water levels in ${highWaterSegments.length} segment(s) immediately to prevent potential flooding or blockage.` : "",
         "• Maintain logs for all segments to track trends and identify emerging risks.",
         lowLightSegments.length > 0 ? "• Consider improving lighting or cleaning procedures for segments with repeated low visibility readings." : "",

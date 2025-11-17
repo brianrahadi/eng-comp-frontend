@@ -141,8 +141,8 @@ ${criticalAreas.length > 0 ? `Most critical time: ${criticalAreas.sort((a, b) =>
 AVERAGE VALUES: 
 - Average Water Level: ${(avgWaterOverall * 100).toFixed(2)}% across all segments
 - Average Light Level: ${avgLightOverall.toFixed(2)}/5 across all segments
-- Trend: ${avgWaterOverall > 0.7 ? "⚠️ High water levels detected" : avgWaterOverall < 0.3 ? "✅ Water levels normal" : "⚠️ Moderate water levels"}
-${avgLightOverall < 2 ? "⚠️ Low light conditions persist" : "✅ Light levels adequate"}
+- Trend: ${avgWaterOverall > 0.7 ? "⚠️ High water levels detected" : avgWaterOverall < 0.3 ? "Water levels normal" : "Moderate water levels"}
+${avgLightOverall < 2 ? "⚠️ Low light conditions persist" : "Light levels adequate"}
 
 INTERPRETATION:
 ${avgWaterOverall > 0.8 ? "CRITICAL: System shows elevated water levels indicating potential flooding or blockage. Immediate inspection recommended." : ""}
