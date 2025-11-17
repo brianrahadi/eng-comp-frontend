@@ -13,7 +13,7 @@ import {
   calculateSeverityLevel
 } from './criticalitySystem';
 
-const GEMINI_API_KEY = "AIzaSyAyTiMjfhOKa5VQ-6omRm5-WAW-NsSYEBM";
+const GEMINI_API_KEY = "lol";
 
 /**
  * Generate AI-powered insights for critical areas using Gemini API (INVERTED AWARE)
